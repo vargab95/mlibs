@@ -12,49 +12,6 @@
 #include "vector.h"
 #include "utils.h"
 
-static int print_u128_u(uint128_t u128)
-{
-    uint128_t divider = 1;
-    char asd[1000] = {0};
-    uint16_t looper = 0u;
-
-    puts("AaaA");
-
-    uint128_t divided_val = 0;
-    uint128_t moduloead_val = 0;
-
-    while (u128 / divider > 0)
-    {
-        divided_val = u128 / divider;
-        moduloead_val = divided_val % 10;
-        divider *= 10;
-        looper++;
-    }
-
-    while(looper)
-    {
-        --looper;
-        putchar(asd[999 - looper]);
-    }
-
-    putchar('\n');
-    
-    return 0;
-}
-
-uint128_t get_prd_128()
-{
-    uint128_t asd = 1u;
-    uint32_t looper;
-
-    for (looper = 0u; looper < 100u; looper++)
-    {
-        asd += looper;
-    }
-
-    return (uint128_t) 1.45234523e38;
-}
-
 int main(void)
 {
     mLibVector_t myvector;

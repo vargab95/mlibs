@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 #include <inttypes.h>
 
@@ -16,7 +17,7 @@
             if (remainingLength == 0u) return;                                          \
         } while (0u)
 
-void mLibUtils_Copy(void * src, void * dst, size_t len)
+void mLibUtils_Copy(void const * src, void * dst, size_t len)
 {
     MLIB_COPY_UNTIL_LEN_REMAIN(uint128_t, src, dst, len);
     MLIB_COPY_UNTIL_LEN_REMAIN(uint64_t,  src, dst, len);
@@ -41,4 +42,9 @@ uint32_t mLibUtils_32bitHash(void const * const data, size_t size)
     hash ^= hash >> 11u;
     hash += hash << 15u;
     return hash;
+}
+
+void mLibUtils_Print_u128(uint128_t u128)
+{
+    return;
 }

@@ -17,9 +17,10 @@ typedef struct {
     size_t size;
 } sizedPtr_t;
 
-extern void mLibUtils_Copy(void * src, void * dst, size_t len);
+void mLibUtils_Copy(void const * src, void * dst, size_t len);
 extern void mLibUtils_CopyWithCondition(void * src, void * dst, size_t len, bool (*condition) (void * first, void * second, size_t size));
 extern bool mLibUtils_CopyCondition_Equal (void * first, void * second, size_t size);
 extern uint32_t mLibUtils_32bitHash(void const * const data, size_t size);
+void mLibUtils_Print_u128(uint128_t u128);
 
 #endif /* LIB_vector_H_ */
