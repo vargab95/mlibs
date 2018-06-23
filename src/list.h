@@ -26,7 +26,7 @@ typedef struct {
 } mLibList_t;
 
 mLibList_t mLibList_GetDefault(void);
-void mLibList_Add(mLibList_t * const list, void const * const data, size_t size);
+void mLibList_AddToEnd(mLibList_t * const list, void const * const data, size_t size);
 void mLibList_PopByValue(mLibList_t * const list, void const * const data, size_t size);
 void mLibList_PopOneById(mLibList_t * const list, size_t id);
 void mLibList_PopById(mLibList_t * const list, size_t id_start, size_t id_stop);

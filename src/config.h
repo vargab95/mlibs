@@ -37,8 +37,8 @@ typedef struct {
 } mLibVersion_t;
 
 typedef struct {
-	vectorConfigLanguage_t language;
-	vectorConfigMemoryType_t memType;
+	listConfigLanguage_t language;
+	listConfigMemoryType_t memType;
 } mLibVectorConfig_t;
 
 typedef struct {

@@ -20,15 +20,13 @@ static int print_u128_u(uint128_t u128)
 
     puts("AaaA");
 
-    char asdasd;
     uint128_t divided_val = 0;
     uint128_t moduloead_val = 0;
 
     while (u128 / divider > 0)
     {
-    	divided_val = u128 / divider;
-    	moduloead_val = divided_val % 10;
-    	asdasd = asd[999 - looper] = moduloead_val + '0';
+        divided_val = u128 / divider;
+        moduloead_val = divided_val % 10;
         divider *= 10;
         looper++;
     }

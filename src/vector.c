@@ -27,7 +27,7 @@ void mLibVector_Add (mLibVector_t * const vector, void const * const data, size_
     vector->items[vector->elementCount - 1u].data = malloc(size);
     vector->items[vector->elementCount - 1u].size = size;
     
-    mLibUtils_Copy(data, vector->items[vector->elementCount - 1u].data, size);
+    mLibUtils_Copy(data, (void *)(vector->items[vector->elementCount - 1u].data), size);
 }
 
 void mLibVector_AddFront (mLibVector_t * const vector, void const * const data, size_t const size)
