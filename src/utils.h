@@ -12,9 +12,14 @@
 
 typedef __uint128_t uint128_t;
 typedef unsigned char bool;
+typedef struct {
+    void * ptr;
+    size_t size;
+} sizedPtr_t;
 
 extern void mLibUtils_Copy(void * src, void * dst, size_t len);
 extern void mLibUtils_CopyWithCondition(void * src, void * dst, size_t len, bool (*condition) (void * first, void * second, size_t size));
 extern bool mLibUtils_CopyCondition_Equal (void * first, void * second, size_t size);
+extern uint32_t mLibUtils_32bitHash(void const * const data, size_t size);
 
-#endif /* LIB_LIST_H_ */
+#endif /* LIB_vector_H_ */

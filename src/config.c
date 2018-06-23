@@ -9,8 +9,8 @@
 
 mLibConfig_t MLibConfig_g = {
 		.version = MLIB_VERSION,
-		.listConfig = {
-				.language = MLIB_LIST_CONF_LANG_USED,
-				.language = MLIB_LIST_CONF_MEM_TYPE
+		.vectorConfig = {
+				.language = MLIB_vector_CONF_LANG_USED,
+				.language = MLIB_vector_CONF_MEM_TYPE
 		}
 };

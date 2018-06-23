@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-#include "list.h"
+#include "vector.h"
 #include "utils.h"
 
 static int print_u128_u(uint128_t u128)
@@ -40,6 +40,8 @@ static int print_u128_u(uint128_t u128)
     }
 
     putchar('\n');
+    
+    return 0;
 }
 
 uint128_t get_prd_128()
@@ -57,31 +59,41 @@ uint128_t get_prd_128()
 
 int main(void)
 {
-    mLibList_t myList;
+    mLibVector_t myvector;
     
-    myList.elementCount = 0u;
+    myvector.elementCount = 0u;
     
-    uint32_t data = 53u;
+    uint8_t data = 53u;
     
     for (uint16_t asd = 0u; asd < 10u; asd++)
     {
+        mLibVector_Add (&myvector, &data, sizeof(uint8_t));
         data += 100u;
-        mLibList_Add (&myList, &data, sizeof(uint32_t));
     }
     
-    for (uint16_t looper = 0u; looper < myList.elementCount; looper++)
+    for (uint16_t looper = 0u; looper < myvector.elementCount; looper++)
     {
-        printf("%d\t%d\n", looper, *(uint32_t *)(myList.items[looper].data));
+        printf("%03d\t%03d\t%x\n", looper, *(uint8_t *)(myvector.items[looper].data), mLibUtils_32bitHash((uint8_t *)(myvector.items[looper].data), 4u));
     }
-    
-    mLibList_Pop(&myList, 3, 6);
     
     puts("\n\n");
-    printf("%d\n", myList.elementCount);
+    myvector = mLibVector_GetSubList(&myvector, 0, 9);
     
-    for (uint16_t looper = 0u; looper < myList.elementCount; looper++)
+    for (uint16_t looper = 0u; looper < myvector.elementCount; looper++)
     {
-        printf("%d\t%d\n", looper, *(uint32_t *)(myList.items[looper].data));
+        printf("%03d\t%03d\t%x\n", looper, *(uint8_t *)(myvector.items[looper].data), mLibUtils_32bitHash((uint32_t *)(myvector.items[looper].data), 4u));
     }
+    
+    //~ for (uint8_t elemLooper = 0u; elemLooper < 4u; elemLooper++)
+    //~ {
+        //~ mLibVector_PopFirst(&myvector);
+        //~ puts("\n\n");
+        //~ printf("%d\n", myvector.elementCount);
+        //~ 
+        //~ for (uint16_t looper = 0u; looper < myvector.elementCount; looper++)
+        //~ {
+            //~ printf("%03d\t%03d\t%x\n", looper, *(uint32_t *)(myvector.items[looper].data), mLibUtils_32bitHash((uint32_t *)(myvector.items[looper].data), 4u));
+        //~ }
+    //~ }
 }
 
