@@ -7,7 +7,7 @@
  */
 
 #include <string>
-#include <stdarg.h>
+#include <fstream>
 #include "LoggerInterface.hh"
 
 #pragma once
@@ -21,7 +21,22 @@ namespace logger
  */
 class Logger : public LoggerInterface {
 public:
+  /**
+   * Parametered constructor
+   * Sets instance variables and opens log file.
+   *
+   * @param level  Minimal log level which is written into the destination
+   * @param path Path of the log file
+   * @param consoleLogEnabled Sets whether logging to cerr is enabled or not
+   * @return none
+   */
   Logger(LogLevels level, std::string path, bool consoleLogEnabled);
+
+  /**
+   * Destructor
+   * Closes the log file
+   */
+  ~Logger();
 
   /**
    * Creates a logger singleton.
@@ -59,15 +74,17 @@ public:
    * Function to write log message according to previous setups.
    *
    * @param level Log level to be used to report this message
-   * @param ... Arguments to log
+   * @param msg Message to log
    * @return none
    */
-  virtual void writeLogMessage(LogLevels level, ...);
+  virtual void writeLogMessage(LogLevels level, std::string msg);
 private:
   /**
    * Signs whether the logging to stderr is enabled or not.
    */
   bool isConsoleLoggingEnabled;
+  LogLevels minimumLevel;
+  std::ofstream logFile;
 };
 
 }

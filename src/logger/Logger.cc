@@ -7,8 +7,9 @@
  */
 
 #include <string>
-#include <stdarg.h>
+#include <exception>
 #include <iostream>
+#include <fstream>
 #include "Logger.hh"
 
 namespace mlibs
@@ -16,8 +17,14 @@ namespace mlibs
 namespace logger
 {
 
-Logger::Logger(LogLevels level, std::string path, bool consoleLogEnabled) {
+Logger::Logger(LogLevels level, std::string path, bool consoleLogEnabled):
+  minimumLevel(level),
+  isConsoleLoggingEnabled(consoleLogEnabled) {
+  logFile.open(path);
+}
 
+Logger::~Logger() {
+  logFile.close();
 }
 
 void Logger::createLogger(LogLevels level, std::string path, bool consoleLogEnabled)  {
@@ -29,18 +36,28 @@ void Logger::setLogFilePath(std::string path)  {
 }
 
 void Logger::enableConsoleLog()  {
-
+  isConsoleLoggingEnabled = true;
 }
 
 void Logger::disableConsoleLog()  {
-
+  isConsoleLoggingEnabled = false;
 }
 
-void Logger::writeLogMessage(LogLevels level, ...) {
-  if (level < ERROR) {
-//  std::cout << ... << args << std::endl;
-  } else {
-//  std::cerr << ... << args << std::endl;
+void Logger::writeLogMessage(LogLevels level, std::string msg) {
+  if (level < minimumLevel) {
+    return;
+  }
+
+  if (isConsoleLoggingEnabled) {
+    if (level < ERROR) {
+      std::cout << msg << std::endl;
+    } else {
+      std::cerr << msg << std::endl;
+    }
+  }
+
+  if (logFile.is_open()) {
+    logFile << msg << std::endl;
   }
 }
 

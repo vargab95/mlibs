@@ -66,10 +66,10 @@ struct LoggerInterface {
    * Function to write log message according to previous setups.
    *
    * @param level Log level to be used to report this message
-   * @param ... Arguments to log
+   * @param msg Message to log
    * @return none
    */
-  virtual void writeLogMessage(LogLevels level, ...) = 0;
+  virtual void writeLogMessage(LogLevels level, std::string msg) = 0;
 };
 
 }

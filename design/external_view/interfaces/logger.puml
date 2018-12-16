@@ -7,7 +7,7 @@ package "logger" {
     setLogFilePath(path)
     enableConsoleLog()
     disableConsoleLog()
-    writeLogMessage(level, arguments)
+    writeLogMessage(level, string)
   }
 }
 
