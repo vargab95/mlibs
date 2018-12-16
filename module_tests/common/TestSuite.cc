@@ -43,6 +43,14 @@ bool TestSuite::runAll(void) {
   }
 
   postTesting();
+
+  std::cout << std::endl << "Result: " << successCnt / (double)progressCnt * 100 << "% was passed" << std::endl;
+
+  if (failCnt != 0) {
+    return false;
+  }
+
+  return true;
 }
 
 void TestSuite::postTesting(void) {
