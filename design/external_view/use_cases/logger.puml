@@ -1,0 +1,12 @@
+@startuml
+
+!include actors.puml
+
+package "logger" {
+  usecase (Write log messages)
+  usecase (Set logging level)
+  usecase (Set log file path)
+  usecase (Enable logging to console)
+}
+
+@enduml
