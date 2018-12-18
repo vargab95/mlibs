@@ -33,3 +33,6 @@
 
 # VIM related
 *.swp
+
+# Build related
+build/
