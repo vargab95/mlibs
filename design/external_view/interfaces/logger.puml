@@ -1,14 +1,12 @@
 @startuml
 
-package "logger" {
-  interface "LoggerInterface" {
-    createLogger(level, path, consoleLogEnabled)
-    setLogLevel(level)
-    setLogFilePath(path)
-    enableConsoleLog()
-    disableConsoleLog()
-    writeLogMessage(level, string)
-  }
+interface "LoggerInterface" {
+  createLogger(level, path, consoleLogEnabled)
+  setLogLevel(level)
+  setLogFilePath(path)
+  enableConsoleLog()
+  disableConsoleLog()
+  writeLogMessage(level, string)
 }
 
 @enduml
