@@ -7,8 +7,7 @@ include_directories ("./src")
 add_subdirectory (src)
 add_subdirectory (module_tests)
 
-add_library (mlibs SHARED src/mlibs.cc)
-target_link_libraries (mlibs mlibs_logger)
+add_library (mlibs SHARED ${MLIBS_SRCS})
+# target_link_libraries (mlibs mlibs_logger)
 
 enable_testing ()
-add_test (NAME ModuleTests COMMAND Test)

@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.9)
 
-add_library(mlibs_logger SHARED
-  Logger.cc
+set(MLIBS_LOGGER_SRCS
+    ${CMAKE_CURRENT_SOURCE_DIR}/Logger.cc
+    PARENT_SCOPE
 )
 
 #include_directories(".")
