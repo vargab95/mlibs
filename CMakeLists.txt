@@ -1,13 +1,16 @@
-cmake_minimum_required (VERSION 3.9)
+cmake_minimum_required (VERSION 3.5)
 
-project(mlibs VERSION 0.1.0 DESCRIPTION "My self-compiled libs")
+project(mlibs DESCRIPTION "My self-compiled libs")
+
+option(MLIBS_BUILD_TESTS "Switch to build test or not")
 
 include_directories ("./src")
 
 add_subdirectory (src)
-add_subdirectory (module_tests)
 
 add_library (mlibs SHARED ${MLIBS_SRCS})
-# target_link_libraries (mlibs mlibs_logger)
 
+if (MLIBS_BUILD_TESTS)
+  add_subdirectory (module_tests)
+endif ()
 enable_testing ()
