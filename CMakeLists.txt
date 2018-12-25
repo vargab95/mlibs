@@ -1,7 +1,5 @@
 cmake_minimum_required (VERSION 3.5)
 
-project(mlibs DESCRIPTION "My self-compiled libs")
-
 option(MLIBS_BUILD_TESTS "Switch to build test or not")
 
 include_directories ("./src")
