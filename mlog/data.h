@@ -45,6 +45,7 @@ typedef struct {
 
 typedef struct {
     uint64_t max_index;
+    uint8_t endianness;
     mlog_software_version version;
     char * user_data_format = "%d %100s";
 } mlog_session_metadata;
