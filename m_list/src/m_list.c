@@ -45,6 +45,7 @@ m_com_sized_data_t* m_list_next(m_list_t *list)
     if (list->curr->next)
     {
         next_data = &list->curr->next->data;
+        list->curr = list->curr->next;
     }
 
     return next_data;
@@ -57,6 +58,7 @@ m_com_sized_data_t* m_list_prev(m_list_t *list)
     if (list->curr->prev)
     {
         prev_data = &list->curr->prev->data;
+        list->curr = list->curr->prev;
     }
 
     return prev_data;
@@ -73,22 +75,22 @@ m_com_sized_data_t* m_list_get_by_id(const m_list_t *const list, uint32_t id)
 
 void m_list_append_to_end_set(m_list_t *list, const m_com_sized_data_t *const value)
 {
-    append_to_beginning_any(list, value, FALSE);
+    append_to_end_any(list, value, FALSE);
 }
 
 void m_list_append_to_beginning_set(m_list_t *list, const m_com_sized_data_t *const value)
 {
-    append_to_end_any(list, value, TRUE);
+    append_to_beginning_any(list, value, FALSE);
 }
 
 void m_list_append_to_end_store(m_list_t *list, const m_com_sized_data_t *const value)
 {
-    append_to_beginning_any(list, value, FALSE);
+    append_to_end_any(list, value, TRUE);
 }
 
 void m_list_append_to_beginning_store(m_list_t *list, const m_com_sized_data_t *const value)
 {
-    append_to_end_any(list, value, TRUE);
+    append_to_beginning_any(list, value, TRUE);
 }
 
 void m_list_delete_by_value(m_list_t *list, const m_com_sized_data_t *const value)
@@ -177,10 +179,6 @@ static void append_to_end_any(m_list_t *list, const m_com_sized_data_t *const va
     {
         list->head = list->tail;
     }
-    else if (list->head == list->tail)
-    {
-        list->tail->prev = list->head;
-    }
 
     list->size++;
 }
@@ -205,10 +203,6 @@ static void append_to_beginning_any(m_list_t *list, const m_com_sized_data_t *co
     {
         list->tail = list->head;
     }
-    else if (list->head == list->tail)
-    {
-        list->head->next = list->tail;
-    }
 
     list->size++;
 }
@@ -217,12 +211,12 @@ static void conditional_copy(const m_com_sized_data_t *const src, m_com_sized_da
 {
     if (copy)
     {
-        *dst = *src;
+        dst->data = m_mem_malloc(src->size);
+        m_mem_copy(src, dst);
+        dst->size = src->size;
     }
     else
     {
-        dst->data = m_mem_malloc(src->size);
-        m_mem_cmp(src, dst);
-        dst->size = src->size;
+        *dst = *src;
     }
 }
