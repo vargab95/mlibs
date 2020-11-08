@@ -1,4 +1,4 @@
-#include <map>
+#include <list>
 #include <string>
 #include <iostream>
 #include <cstdlib>
@@ -8,7 +8,7 @@
 
 extern "C"
 {
-#include "m_map.h"
+#include "m_list.h"
 }
 
 using namespace std;
@@ -23,12 +23,12 @@ int main(void)
     int a;
     start = high_resolution_clock::now();
     {
-        map<int, int> std_map;
+        list<int> std_list;
 
         sub_start = high_resolution_clock::now();
         for (int i = 0; i < test_count; i++)
         {
-            std_map[i] = rand();
+            std_list.push_back(rand());
         }
         sub_stop = high_resolution_clock::now();
         duration = duration_cast<microseconds>(sub_stop - sub_start);
@@ -37,7 +37,7 @@ int main(void)
         sub_start = high_resolution_clock::now();
         for (int i = 0; i < test_count; i++)
         {
-            a = std_map[i];
+            std::next(std_list.begin(), i);
         }
         sub_stop = high_resolution_clock::now();
         duration = duration_cast<microseconds>(sub_stop - sub_start);
@@ -49,13 +49,11 @@ int main(void)
 
     start = high_resolution_clock::now();
     {
-        m_map_t *mlib_map = m_map_create(4096);
-        m_com_sized_data_t key, value;
+        m_list_t *mlib_list = m_list_create();
+        m_com_sized_data_t value;
         m_com_sized_data_t *result;
         int i;
 
-        key.data = &i;
-        key.size = sizeof(i);
         value.data = &a;
         value.size = sizeof(a);
 
@@ -63,7 +61,7 @@ int main(void)
         for (i = 0; i < test_count; i++)
         {
             a = rand();
-            m_map_store(mlib_map, &key, &value);
+            m_list_append_to_beginning_set(mlib_list, &value);
         }
         sub_stop = high_resolution_clock::now();
         duration = duration_cast<microseconds>(sub_stop - sub_start);
@@ -72,14 +70,13 @@ int main(void)
         sub_start = high_resolution_clock::now();
         for (int i = 0; i < test_count; i++)
         {
-            // result = m_map_get(mlib_map, &key);
-            result = m_map_read(mlib_map, &key, &value);
+            result = m_list_get_by_id(mlib_list, i);
         }
         sub_stop = high_resolution_clock::now();
         duration = duration_cast<microseconds>(sub_stop - sub_start);
         cout << "mlib read ms: " << duration.count() << endl;
 
-        m_map_destroy(mlib_map);
+        m_list_destroy(mlib_list);
     }
     stop = high_resolution_clock::now();
     mlib_duration = duration = duration_cast<microseconds>(stop - start);

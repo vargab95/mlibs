@@ -6,13 +6,6 @@
 #include "m_hash.h"
 #include "m_mem.h"
 
-enum
-{
-    NOT_USED = 0,
-    STORED,
-    SET
-} copy_state_t;
-
 static m_map_element_t *get_root_element(const m_map_t *const map, const m_com_sized_data_t *const key);
 static m_map_element_t *find_sub_element(const m_map_element_t *const root, const m_com_sized_data_t *const key);
 static m_map_element_t *create_element(m_map_element_t *const root, const m_com_sized_data_t *const key);
@@ -115,7 +108,7 @@ void m_map_print(const m_map_t *const map)
         {
             if (element->data.data)
             {
-                printf("0x%x ", element->data.data);
+                printf("0x%p ", element->data.data);
             }
             element = element->next;
         }
