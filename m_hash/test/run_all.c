@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "m_hash.h"
-#include "m_common.h"
+#include <m_libs/m_common.h>
 
 int main(void)
 {

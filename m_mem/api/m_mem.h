@@ -1,11 +1,12 @@
 #ifndef __M_MEM_H__
 #define __M_MEM_H__
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "m_common.h"
+#include <m_libs/m_common.h>
 
 enum
 {
@@ -69,5 +70,8 @@ bool m_mem_cmp(const m_com_sized_data_t *const ptr1, const m_com_sized_data_t *c
  *
  */
 void m_mem_copy(const m_com_sized_data_t *const source, m_com_sized_data_t *const destination);
+
+void m_mem_dump(const m_com_sized_data_t *const data, FILE *fp);
+void m_mem_text_dump(const m_com_sized_data_t *const data, FILE *fp);
 
 #endif

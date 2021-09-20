@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "m_common.h"
+#include <m_libs/m_common.h>
 
 /**
  * @brief Type definition for map elements
@@ -31,31 +31,31 @@ typedef struct
 
 /**
  * @brief New map creation
- * 
- * @param[in] size 
- * @return m_map_t* 
+ *
+ * @param[in] size
+ * @return m_map_t*
  */
 m_map_t *m_map_create(const uint32_t size);
 
 /**
- * @brief 
- * 
- * @param[in] map 
+ * @brief
+ *
+ * @param[in] map
  */
 void m_map_destroy(m_map_t *map);
 
 /**
- * @brief 
- * 
- * @param[in] map 
- * @param[in] key 
- * @return m_com_sized_data_t* 
+ * @brief
+ *
+ * @param[in] map
+ * @param[in] key
+ * @return m_com_sized_data_t*
  */
 m_com_sized_data_t *m_map_get(const m_map_t *const map, const m_com_sized_data_t *const key);
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  * @param map[in] Pointer to the map.
  * @param key[in] Key of the stored data.
  * @param value[in] Value of the stored data. If NULL then the object is deleted.
@@ -65,39 +65,39 @@ void m_map_set(const m_map_t *const map, const m_com_sized_data_t *const key, co
 
 /**
  * @brief Reads the data from the temporary buffer to the given buffer
- * 
+ *
  * !!! AWARE !!! The allocated memory shall be as big as the stored information's
- * 
- * @param[in] map 
- * @param[in] key 
- * @param[in] value 
- * @return m_com_sized_data_t* 
+ *
+ * @param[in] map
+ * @param[in] key
+ * @param[in] value
+ * @return m_com_sized_data_t*
  */
 m_com_sized_data_t *m_map_read(const m_map_t *const map, const m_com_sized_data_t *const key, m_com_sized_data_t *value);
 
 /**
  * @brief Creates a temporary buffer and copies the value into it.
- * 
- * @param[in] map 
- * @param[in] key 
- * @param[in] value 
+ *
+ * @param[in] map
+ * @param[in] key
+ * @param[in] value
  */
 void m_map_store(const m_map_t *const map, const m_com_sized_data_t *const key, const m_com_sized_data_t *const value);
 
 /**
  * @brief Deletes an object.
- * 
+ *
  * Can be used both for set and stored objects.
- * 
- * @param[in] map 
- * @param[in] key 
+ *
+ * @param[in] map
+ * @param[in] key
  */
 void m_map_delete(const m_map_t *const map, const m_com_sized_data_t *const key);
 
 /**
  * @brief Pretty print for m_map
- * 
- * @param[in] map 
+ *
+ * @param[in] map
  */
 void m_map_print(const m_map_t *const map);
 

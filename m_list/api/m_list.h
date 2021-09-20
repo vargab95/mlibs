@@ -1,10 +1,11 @@
 #ifndef __M_LIST_H__
 #define __M_LIST_H__
 
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "m_common.h"
+#include <m_libs/m_common.h>
 
 /**
  * @brief Type definition for list elements
@@ -57,14 +58,14 @@ m_com_sized_data_t* m_list_get_by_id(const m_list_t *const list, uint32_t id);
  *
  * @param[in] list
  */
-m_com_sized_data_t* m_list_set_curr_to_head(m_list_t *list);
+void m_list_set_curr_to_head(m_list_t *list);
 
 /**
  * @brief
  *
  * @param[in] list
  */
-m_com_sized_data_t* m_list_set_curr_to_tail(m_list_t *list);
+void m_list_set_curr_to_tail(m_list_t *list);
 
 /**
  * @brief
@@ -138,5 +139,8 @@ void m_list_delete_all_by_value(m_list_t *list, const m_com_sized_data_t *const 
  * @param[in] list
  */
 void m_list_print(const m_list_t *const list);
+
+void m_list_dump_binary(const m_list_t *const list, FILE *fp);
+m_list_t* m_list_load_binary(FILE *fp);
 
 #endif

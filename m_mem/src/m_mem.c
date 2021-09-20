@@ -82,3 +82,19 @@ void m_mem_copy(const m_com_sized_data_t *const source, m_com_sized_data_t *cons
 
     memcpy(destination->data, source->data, source->size);
 }
+
+void m_mem_dump(const m_com_sized_data_t *const data, FILE *fp)
+{
+    for (int i = 0; i < data->size; i++)
+    {
+        fprintf(fp, "%x", ((uint8_t*)data->data)[i]);
+    }
+}
+
+void m_mem_text_dump(const m_com_sized_data_t *const data, FILE *fp)
+{
+    for (int i = 0; i < data->size; i++)
+    {
+        fprintf(fp, "%c", ((uint8_t*)data->data)[i]);
+    }
+}

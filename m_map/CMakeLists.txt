@@ -5,6 +5,10 @@ project(m_map VERSION 1.0.0 DESCRIPTION "A simple hash table implementation.")
 option(BUILD_DOC "Build documentation" ON)
 option(BUILD_TEST "Build tests" ON)
 
+find_library(M_HASH_LIB NAMES m_hash libm_hash)
+find_library(M_COMMON_LIB NAMES m_common libm_common)
+find_library(M_MEM_LIB NAMES m_mem libm_mem)
+
 add_library(m_map SHARED
             ${CMAKE_CURRENT_SOURCE_DIR}/src/m_map.c
             ${CMAKE_CURRENT_SOURCE_DIR}/api/m_map.h)
@@ -15,7 +19,10 @@ target_include_directories(m_map
                             PRIVATE
                                 ${CMAKE_CURRENT_SOURCE_DIR}/inc
                                 ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(m_map m_hash m_mem m_common)
+target_link_libraries(m_map ${M_HASH_LIB} ${M_MEM_LIB} ${M_COMMON_LIB})
+
+install(TARGETS m_map DESTINATION lib)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/api/m_map.h DESTINATION include/m_libs)
 
 if (BUILD_TEST)
   add_executable(m_map_test
