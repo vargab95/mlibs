@@ -152,8 +152,13 @@ static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const 
             {
                 tmp->next->prev = tmp->prev;
             }
+            else
+            {
+                list->tail = tmp->prev;
+            }
 
             free(tmp);
+            --list->size;
 
             if (TRUE != multi)
             {
