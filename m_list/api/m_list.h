@@ -25,10 +25,16 @@ typedef struct m_list_node_t
 typedef struct
 {
     uint32_t size;
+    uint32_t reference_counter;
     m_list_node_t *head;
     m_list_node_t *tail;
-    m_list_node_t *curr;
 } m_list_t;
+
+typedef struct
+{
+    m_list_t * list_reference;
+    m_list_node_t *curr;
+} m_list_iterator_t;
 
 /**
  * @brief New list creation
@@ -52,34 +58,6 @@ void m_list_destroy(m_list_t *list);
  * @param[in] id
  */
 m_com_sized_data_t* m_list_get_by_id(const m_list_t *const list, uint32_t id);
-
-/**
- * @brief
- *
- * @param[in] list
- */
-void m_list_set_curr_to_head(m_list_t *list);
-
-/**
- * @brief
- *
- * @param[in] list
- */
-void m_list_set_curr_to_tail(m_list_t *list);
-
-/**
- * @brief
- *
- * @param[in] list
- */
-m_com_sized_data_t* m_list_next(m_list_t *list);
-
-/**
- * @brief
- *
- * @param[in] list
- */
-m_com_sized_data_t* m_list_prev(m_list_t *list);
 
 /**
  * @brief
@@ -142,5 +120,13 @@ void m_list_print(const m_list_t *const list);
 
 void m_list_dump_binary(const m_list_t *const list, FILE *fp);
 m_list_t* m_list_load_binary(FILE *fp);
+
+m_list_iterator_t* m_list_iterator_create(m_list_t *list);
+void m_list_iterator_destroy(m_list_iterator_t **iterator);
+void m_list_iterator_go_to_head(m_list_iterator_t *iterator);
+void m_list_iterator_go_to_tail(m_list_iterator_t *iterator);
+m_com_sized_data_t* m_list_iterator_current(const m_list_iterator_t * const iterator);
+m_com_sized_data_t* m_list_iterator_next(m_list_iterator_t *iterator);
+m_com_sized_data_t* m_list_iterator_previous(m_list_iterator_t *iterator);
 
 #endif
