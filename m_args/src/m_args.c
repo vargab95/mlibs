@@ -34,10 +34,12 @@ bool m_args_parse(m_args_t *args, int argc, char **argv) {
       char *env_ptr;
       if (strcmp(argv[i], entry->short_switch) == 0 ||
           strcmp(argv[i], entry->long_switch) == 0) {
-        entry->value.string_val = argv[i + 1];
+        if (!entry->flags.no_value)
+          entry->value.string_val = argv[i + 1];
         found = TRUE;
       } else if ((env_ptr = getenv(entry->environment_variable)) != NULL) {
-        entry->value.string_val = env_ptr;
+        if (!entry->flags.no_value)
+          entry->value.string_val = env_ptr;
         found = TRUE;
       }
 

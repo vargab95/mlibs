@@ -18,6 +18,7 @@ typedef struct {
         uint8_t required : 1;
         uint8_t convert : 1;
         uint8_t present : 1;
+        uint8_t no_value : 1;
         uint8_t __reserved : 4;
     } flags;
 
