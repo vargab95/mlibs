@@ -45,11 +45,7 @@ bool m_args_parse(m_args_t *args, int argc, char **argv) {
 
       if (found) {
         entry->flags.present = 1;
-        if (i < argc) {
-          i++;
-        } else {
-          break;
-        }
+        break;
       }
     }
   }
