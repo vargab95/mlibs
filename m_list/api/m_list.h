@@ -1,9 +1,9 @@
 #ifndef __M_LIST_H__
 #define __M_LIST_H__
 
-#include <stdio.h>
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
 
 #include <m_libs/m_common.h>
 
@@ -13,7 +13,7 @@
 typedef struct m_list_node_t
 {
     uint8_t copied : 2;
-    uint8_t reserved : 5;     /**< reserved for further flags */
+    uint8_t reserved : 5; /**< reserved for further flags */
     m_com_sized_data_t data;
     struct m_list_node_t *next;
     struct m_list_node_t *prev;
@@ -32,7 +32,7 @@ typedef struct
 
 typedef struct
 {
-    m_list_t * list_reference;
+    m_list_t *list_reference;
     m_list_node_t *curr;
 } m_list_iterator_t;
 
@@ -57,7 +57,7 @@ void m_list_destroy(m_list_t *list);
  * @param[in] list
  * @param[in] id
  */
-m_com_sized_data_t* m_list_get_by_id(const m_list_t *const list, uint32_t id);
+m_com_sized_data_t *m_list_get_by_id(const m_list_t *const list, uint32_t id);
 
 /**
  * @brief
@@ -119,14 +119,14 @@ void m_list_delete_all_by_value(m_list_t *list, const m_com_sized_data_t *const 
 void m_list_print(const m_list_t *const list);
 
 void m_list_dump_binary(const m_list_t *const list, FILE *fp);
-m_list_t* m_list_load_binary(FILE *fp);
+m_list_t *m_list_load_binary(FILE *fp);
 
-m_list_iterator_t* m_list_iterator_create(m_list_t *list);
+m_list_iterator_t *m_list_iterator_create(m_list_t *list);
 void m_list_iterator_destroy(m_list_iterator_t **iterator);
 void m_list_iterator_go_to_head(m_list_iterator_t *iterator);
 void m_list_iterator_go_to_tail(m_list_iterator_t *iterator);
-m_com_sized_data_t* m_list_iterator_current(const m_list_iterator_t * const iterator);
-m_com_sized_data_t* m_list_iterator_next(m_list_iterator_t *iterator);
-m_com_sized_data_t* m_list_iterator_previous(m_list_iterator_t *iterator);
+m_com_sized_data_t *m_list_iterator_current(const m_list_iterator_t *const iterator);
+m_com_sized_data_t *m_list_iterator_next(m_list_iterator_t *iterator);
+m_com_sized_data_t *m_list_iterator_previous(m_list_iterator_t *iterator);
 
 #endif

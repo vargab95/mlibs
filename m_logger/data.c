@@ -1,9 +1,9 @@
 #include "stdio.h"
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "data.h"
 
@@ -28,9 +28,7 @@ void mlog_add_session_data(const mlog_session_data *data)
     {
         char path[256];
         int outputFile;
-        sprintf(path, "data/%04x%08x%08x",
-                data->id.session_id,
-                session->data[0].timestamp,
+        sprintf(path, "data/%04x%08x%08x", data->id.session_id, session->data[0].timestamp,
                 session->data[session->last_index].timestamp);
         outputFile = open(path, O_WRONLY | O_CREAT | O_TRUNC);
         if (outputFile <= 0)

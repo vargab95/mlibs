@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 #include "config.h"
-#include <m_libs/m_map.h>
 #include <m_libs/m_hash.h>
+#include <m_libs/m_map.h>
 #include <m_libs/m_mem.h>
 
 static m_map_element_t *get_root_element(const m_map_t *const map, const m_com_sized_data_t *const key);

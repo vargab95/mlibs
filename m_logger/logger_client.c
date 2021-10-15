@@ -1,8 +1,8 @@
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <netdb.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "data.h"
 
@@ -40,20 +40,17 @@ int main()
         exit(-3);
     }
 #endif
-    mlog_session_data buff = {
-        .id = {
-            .separated = {
-                .client_id = 4,
-                .session_id = 3}},
-        .timestamp = 5,
-        .data = {.severity = 6, .message = "SAJT"}};
+    mlog_session_data buff = {.id = {.separated = {.client_id = 4, .session_id = 3}},
+                              .timestamp = 5,
+                              .data = {.severity = 6, .message = "SAJT"}};
 
     struct sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
     serverAddress.sin_port = htons(8080);
 
-    if (sendto(clientSocket, &buff, sizeof(buff), 0, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) != sizeof(buff))
+    if (sendto(clientSocket, &buff, sizeof(buff), 0, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) !=
+        sizeof(buff))
     {
         fputs("Error while sending.", stderr);
     }

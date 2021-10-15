@@ -43,7 +43,7 @@ int test_append_set_beginning()
         result = m_list_get_by_id(list, i);
         if (*(int *)result->data != current || result->size != 4 || result->data != &a[current])
         {
-            printf("%d != %d\n", current, *(int*)result->data);
+            printf("%d != %d\n", current, *(int *)result->data);
             is_success = false;
         }
     }
@@ -75,7 +75,7 @@ int test_append_set_end()
         result = m_list_get_by_id(list, i);
         if (*(int *)result->data != i || result->size != 4 || result->data != &a[i])
         {
-            printf("%d != %d\n", i, *(int*)result->data);
+            printf("%d != %d\n", i, *(int *)result->data);
             is_success = false;
         }
     }
@@ -108,7 +108,7 @@ int test_append_store_beginning()
         result = m_list_get_by_id(list, i);
         if (*(int *)result->data != current || result->size != 4 || result->data == &a[current])
         {
-            printf("%d != %d\n", current, *(int*)result->data);
+            printf("%d != %d\n", current, *(int *)result->data);
             is_success = false;
         }
     }
@@ -140,7 +140,7 @@ int test_append_store_end()
         result = m_list_get_by_id(list, i);
         if (*(int *)result->data != i || result->size != 4 || result->data == &a[i])
         {
-            printf("%d != %d\n", i, *(int*)result->data);
+            printf("%d != %d\n", i, *(int *)result->data);
             is_success = false;
         }
     }
@@ -177,9 +177,9 @@ int test_prev_next()
     m_list_next(list);
     m_list_next(list);
     result = m_list_next(list);
-    if (3 != *(int*)result->data)
+    if (3 != *(int *)result->data)
     {
-        printf("3 != %d\n", *(int*)result->data);
+        printf("3 != %d\n", *(int *)result->data);
         is_success = false;
     }
 
@@ -193,9 +193,9 @@ int test_prev_next()
     m_list_prev(list);
     m_list_prev(list);
     result = m_list_prev(list);
-    if (6 != *(int*)result->data)
+    if (6 != *(int *)result->data)
     {
-        printf("6 != %d\n", *(int*)result->data);
+        printf("6 != %d\n", *(int *)result->data);
         is_success = false;
     }
 
@@ -230,9 +230,9 @@ int test_delete_one()
     m_list_next(list);
     m_list_next(list);
     result = m_list_next(list);
-    if (4 != *(int*)result->data)
+    if (4 != *(int *)result->data)
     {
-        printf("4 != %d\n", *(int*)result->data);
+        printf("4 != %d\n", *(int *)result->data);
         is_success = false;
     }
 
@@ -268,9 +268,9 @@ int test_delete_multiple()
     m_list_next(list);
     m_list_next(list);
     result = m_list_next(list);
-    if (2 != *(int*)result->data)
+    if (2 != *(int *)result->data)
     {
-        printf("2 != %d\n", *(int*)result->data);
+        printf("2 != %d\n", *(int *)result->data);
         is_success = false;
     }
 

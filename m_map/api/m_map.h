@@ -1,8 +1,8 @@
 #ifndef __M_MAP_H__
 #define __M_MAP_H__
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include <m_libs/m_common.h>
 
@@ -73,7 +73,8 @@ void m_map_set(const m_map_t *const map, const m_com_sized_data_t *const key, co
  * @param[in] value
  * @return m_com_sized_data_t*
  */
-m_com_sized_data_t *m_map_read(const m_map_t *const map, const m_com_sized_data_t *const key, m_com_sized_data_t *value);
+m_com_sized_data_t *m_map_read(const m_map_t *const map, const m_com_sized_data_t *const key,
+                               m_com_sized_data_t *value);
 
 /**
  * @brief Creates a temporary buffer and copies the value into it.

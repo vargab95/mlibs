@@ -8,8 +8,8 @@
 #include <stdlib.h>
 
 #include "config.h"
-#include "vector.h"
 #include "utils.h"
+#include "vector.h"
 
 void mLibVector_Add(mLibVector_t *const vector, void const *const data, size_t const size)
 {
@@ -30,9 +30,7 @@ void mLibVector_Add(mLibVector_t *const vector, void const *const data, size_t c
     mLibUtils_Copy(data, vector->items[vector->elementCount - 1u].data, size);
 }
 
-void mLibVector_AddFront(mLibVector_t *const vector, void const *const data, size_t const size)
-{
-}
+void mLibVector_AddFront(mLibVector_t *const vector, void const *const data, size_t const size) {}
 
 void mLibVector_AddBack(mLibVector_t *const vector, void const *const data, size_t const size)
 {
@@ -111,7 +109,6 @@ void mLibVector_PopLast(mLibVector_t *const vector)
 
 mLibVector_t mLibVector_GetSubList(mLibVector_t *const vector, size_t const id_start, size_t const id_stop)
 {
-    return (mLibVector_t){
-        .items = &(vector->items[id_start]),
-        .elementCount = vector->elementCount - (vector->elementCount - (id_stop - id_start)) + 1u};
+    return (mLibVector_t){.items = &(vector->items[id_start]),
+                          .elementCount = vector->elementCount - (vector->elementCount - (id_stop - id_start)) + 1u};
 }

@@ -1,9 +1,9 @@
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <netdb.h>
-#include <unistd.h>
 #include <string.h>
 #include <threads.h>
+#include <unistd.h>
 
 #include "data.h"
 
@@ -31,11 +31,7 @@ int process_input(void *info)
         clientLength = sizeof(clientAddress);
 
 #ifdef MLOG_USE_UDP
-        if ((receivedMessageSize = recvfrom(serverSocket,
-                                            &buffer,
-                                            sizeof(buffer),
-                                            0,
-                                            (struct sockaddr *)&clientAddress,
+        if ((receivedMessageSize = recvfrom(serverSocket, &buffer, sizeof(buffer), 0, (struct sockaddr *)&clientAddress,
                                             &clientLength)) < 0)
         {
             fputs("Receiving was failed.\n", stderr);
