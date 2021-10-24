@@ -35,14 +35,9 @@
   "file": "/mnt/148675C58675A7BE/Common/workspace/mlibs/m_map/src/m_map.c"
 },
 {
-  "directory": "/mnt/148675C58675A7BE/Common/workspace/mlibs/Debug/m_list",
-  "command": "/usr/bin/c++   -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_list/api  -g   -o CMakeFiles/m_list_speed_test.dir/test/speed_test.cpp.o -c /mnt/148675C58675A7BE/Common/workspace/mlibs/m_list/test/speed_test.cpp",
-  "file": "/mnt/148675C58675A7BE/Common/workspace/mlibs/m_list/test/speed_test.cpp"
-},
-{
-  "directory": "/mnt/148675C58675A7BE/Common/workspace/mlibs/Debug/m_list",
-  "command": "/usr/bin/cc  -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_list/api  -g   -o CMakeFiles/m_list_test.dir/test/run_all.c.o   -c /mnt/148675C58675A7BE/Common/workspace/mlibs/m_list/test/run_all.c",
-  "file": "/mnt/148675C58675A7BE/Common/workspace/mlibs/m_list/test/run_all.c"
+  "directory": "/mnt/148675C58675A7BE/Common/workspace/mlibs/Debug/m_map",
+  "command": "/usr/bin/cc -Dm_map_EXPORTS -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_map/api -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_map/inc -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_map/src  -g -fPIC   -o CMakeFiles/m_map.dir/src/m_map_iterator.c.o   -c /mnt/148675C58675A7BE/Common/workspace/mlibs/m_map/src/m_map_iterator.c",
+  "file": "/mnt/148675C58675A7BE/Common/workspace/mlibs/m_map/src/m_map_iterator.c"
 },
 {
   "directory": "/mnt/148675C58675A7BE/Common/workspace/mlibs/Debug/m_list",
@@ -50,8 +45,13 @@
   "file": "/mnt/148675C58675A7BE/Common/workspace/mlibs/m_list/src/m_list.c"
 },
 {
-  "directory": "/mnt/148675C58675A7BE/Common/workspace/mlibs/Debug/m_tree",
-  "command": "/usr/bin/cc -Dm_tree_EXPORTS -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_tree/api -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_tree/inc -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_tree/src  -g -fPIC   -o CMakeFiles/m_tree.dir/src/m_tree.c.o   -c /mnt/148675C58675A7BE/Common/workspace/mlibs/m_tree/src/m_tree.c",
-  "file": "/mnt/148675C58675A7BE/Common/workspace/mlibs/m_tree/src/m_tree.c"
+  "directory": "/mnt/148675C58675A7BE/Common/workspace/mlibs/Debug/m_list",
+  "command": "/usr/bin/cc -Dm_list_EXPORTS -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_list/api -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_list/inc -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_list/src  -g -fPIC   -o CMakeFiles/m_list.dir/src/m_list_iterator.c.o   -c /mnt/148675C58675A7BE/Common/workspace/mlibs/m_list/src/m_list_iterator.c",
+  "file": "/mnt/148675C58675A7BE/Common/workspace/mlibs/m_list/src/m_list_iterator.c"
+},
+{
+  "directory": "/mnt/148675C58675A7BE/Common/workspace/mlibs/Debug/m_args",
+  "command": "/usr/bin/cc -Dm_args_EXPORTS -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_args/api -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_args/inc -I/mnt/148675C58675A7BE/Common/workspace/mlibs/m_args/src  -g -fPIC   -o CMakeFiles/m_args.dir/src/m_args.c.o   -c /mnt/148675C58675A7BE/Common/workspace/mlibs/m_args/src/m_args.c",
+  "file": "/mnt/148675C58675A7BE/Common/workspace/mlibs/m_args/src/m_args.c"
 }
 ]

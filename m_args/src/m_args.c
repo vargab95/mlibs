@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "config.h"
-#include "m_args.h"
+#include "m_libs/m_args.h"
 #include <m_libs/m_list.h>
 #include <m_libs/m_mem.h>
 
@@ -51,6 +51,18 @@ bool m_args_parse(m_args_t *args, int argc, char **argv)
 
             if (found)
             {
+                switch (entry->expected_type)
+                {
+                case ARG_TYPE_INT:
+                    entry->value.int_val = atoi(entry->value.string_val);
+                    break;
+                case ARG_TYPE_FLOAT:
+                    entry->value.float_val = atof(entry->value.string_val);
+                    break;
+                case ARG_TYPE_STRING:
+                    break;
+                }
+
                 entry->flags.present = 1;
                 break;
             }
