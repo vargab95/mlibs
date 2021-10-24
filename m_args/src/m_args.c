@@ -7,6 +7,8 @@
 #include <m_libs/m_list.h>
 #include <m_libs/m_mem.h>
 
+static bool fill_arg_entry(m_args_entry_t *entry, int argc, char **argv);
+
 m_args_t *m_args_create()
 {
     m_args_t *args = (m_args_t *)m_mem_malloc(sizeof(m_args_t));
@@ -26,50 +28,62 @@ bool m_args_parse(m_args_t *args, int argc, char **argv)
 {
     m_com_sized_data_t *tmp;
     m_list_iterator_t *iterator = m_list_iterator_create(args->arg_list);
+    bool successful = true;
 
     for (m_list_iterator_go_to_head(iterator); (tmp = m_list_iterator_current(iterator)) != NULL;
          m_list_iterator_next(iterator))
     {
         m_args_entry_t *entry = tmp->data;
-
-        for (int i = 0; i < argc; i++)
+        if (!fill_arg_entry(entry, argc, argv))
         {
-            bool found = FALSE;
-            char *env_ptr;
-            if (strcmp(argv[i], entry->short_switch) == 0 || strcmp(argv[i], entry->long_switch) == 0)
-            {
-                if (!entry->flags.no_value)
-                    entry->value.string_val = argv[i + 1];
-                found = TRUE;
-            }
-            else if ((env_ptr = getenv(entry->environment_variable)) != NULL)
-            {
-                if (!entry->flags.no_value)
-                    entry->value.string_val = env_ptr;
-                found = TRUE;
-            }
-
-            if (found)
-            {
-                switch (entry->expected_type)
-                {
-                case ARG_TYPE_INT:
-                    entry->value.int_val = atoi(entry->value.string_val);
-                    break;
-                case ARG_TYPE_FLOAT:
-                    entry->value.float_val = atof(entry->value.string_val);
-                    break;
-                case ARG_TYPE_STRING:
-                    break;
-                }
-
-                entry->flags.present = 1;
-                break;
-            }
+            successful = false;
         }
     }
 
     m_list_iterator_destroy(&iterator);
+
+    return successful;
+}
+
+static bool fill_arg_entry(m_args_entry_t *entry, int argc, char **argv)
+{
+    for (int i = 0; i < argc; i++)
+    {
+        bool found = FALSE;
+        char *env_ptr;
+        if (strcmp(argv[i], entry->short_switch) == 0 || strcmp(argv[i], entry->long_switch) == 0)
+        {
+            if (!entry->flags.no_value)
+                entry->value.string_val = argv[i + 1];
+            found = TRUE;
+        }
+        else if ((env_ptr = getenv(entry->environment_variable)) != NULL)
+        {
+            if (!entry->flags.no_value)
+                entry->value.string_val = env_ptr;
+            found = TRUE;
+        }
+
+        if (found)
+        {
+            switch (entry->expected_type)
+            {
+            case ARG_TYPE_INT:
+                entry->value.int_val = atoi(entry->value.string_val);
+                break;
+            case ARG_TYPE_FLOAT:
+                entry->value.float_val = atof(entry->value.string_val);
+                break;
+            case ARG_TYPE_STRING:
+                break;
+            }
+
+            entry->flags.present = 1;
+            break;
+        }
+    }
+
+    return true;
 }
 
 m_args_entry_t *m_args_get(m_args_t *args, uint32_t id)
