@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 #include "config.h"
+#include "m_map.h"
 #include <m_libs/m_hash.h>
-#include <m_libs/m_map.h>
 #include <m_libs/m_mem.h>
 
 static m_map_element_t *get_root_element(const m_map_t *const map, const m_com_sized_data_t *const key);
@@ -19,6 +19,7 @@ m_map_t *m_map_create(const uint32_t size)
 
     map->size = size;
     map->table = (m_map_element_t *)m_mem_calloc(map->size, sizeof(m_map_element_t));
+    map->reference_count = 0;
 
     return map;
 }

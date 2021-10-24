@@ -11,6 +11,7 @@ find_library(M_MEM_LIB NAMES m_mem libm_mem)
 
 add_library(m_map SHARED
             ${CMAKE_CURRENT_SOURCE_DIR}/src/m_map.c
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/m_map_iterator.c
             ${CMAKE_CURRENT_SOURCE_DIR}/api/m_map.h)
 target_include_directories(m_map
                             PUBLIC
@@ -31,4 +32,7 @@ if (BUILD_TEST)
 
   add_executable(m_map_speed_test ${CMAKE_CURRENT_SOURCE_DIR}/test/speed_test.cpp)
   target_link_libraries(m_map_speed_test m_map)
+
+  add_test(NAME m_map_functional_test COMMAND ./m_map_test)
+  enable_testing()
 endif()

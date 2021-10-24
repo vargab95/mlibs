@@ -27,7 +27,22 @@ typedef struct
 {
     uint32_t size;
     m_map_element_t *table;
+    uint32_t reference_count;
 } m_map_t;
+
+typedef struct
+{
+    m_map_t *map;
+    uint32_t hash_table_idx;
+    m_map_element_t *element;
+} m_map_iterator_t;
+
+m_map_iterator_t *m_map_iterator_create(m_map_t *map);
+void m_map_iterator_destroy(m_map_iterator_t **iterator);
+void m_map_iterator_next(m_map_iterator_t *iterator);
+m_com_sized_data_t *m_map_iterator_key(const m_map_iterator_t *const iterator);
+m_com_sized_data_t *m_map_iterator_value(const m_map_iterator_t *const iterator);
+void m_map_iterator_reset(m_map_iterator_t *iterator);
 
 /**
  * @brief New map creation
