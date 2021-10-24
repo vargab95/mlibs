@@ -49,7 +49,7 @@ m_list_t *m_list_create();
  *
  * @param[in] list
  */
-void m_list_destroy(m_list_t *list);
+void m_list_destroy(m_list_t **list);
 
 /**
  * @brief

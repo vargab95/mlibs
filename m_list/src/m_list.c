@@ -8,6 +8,7 @@ static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const 
 static void append_to_end_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy);
 static void append_to_beginning_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy);
 static void conditional_copy(const m_com_sized_data_t *const src, m_com_sized_data_t *dst, boolean copy);
+static void delete_node(m_list_node_t **node);
 
 m_list_t *m_list_create()
 {
@@ -23,7 +24,19 @@ m_list_t *m_list_create()
     return list;
 }
 
-void m_list_destroy(m_list_t *list) { free(list); }
+void m_list_destroy(m_list_t **list)
+{
+    m_list_node_t *tmp;
+
+    tmp = (*list)->head;
+    while (tmp != NULL)
+    {
+        delete_node(&tmp);
+    }
+
+    free(*list);
+    *list = NULL;
+}
 
 m_com_sized_data_t *m_list_get_by_id(const m_list_t *const list, uint32_t id)
 {
@@ -101,6 +114,8 @@ static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const 
     {
         if (m_mem_cmp(&tmp->data, value))
         {
+            m_list_node_t *to_delete;
+
             if (tmp->prev != NULL)
             {
                 tmp->prev->next = tmp->next;
@@ -119,7 +134,7 @@ static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const 
                 list->tail = tmp->prev;
             }
 
-            free(tmp);
+            delete_node(&tmp);
             --list->size;
 
             if (TRUE != multi)
@@ -127,8 +142,10 @@ static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const 
                 return;
             }
         }
-
-        tmp = tmp->next;
+        else
+        {
+            tmp = tmp->next;
+        }
     }
 }
 
@@ -139,6 +156,7 @@ static void append_to_end_any(m_list_t *list, const m_com_sized_data_t *const va
     tmp = (struct m_list_node_t *)m_mem_malloc(sizeof(struct m_list_node_t));
 
     conditional_copy(value, &tmp->data, copy);
+    tmp->copied = (copy) ? STORED : SET;
     tmp->next = NULL;
     tmp->prev = list->tail;
 
@@ -222,16 +240,14 @@ m_list_t *m_list_load_binary(FILE *fp)
 
         if (fread(&data_size, sizeof(data_size), 1, fp) != 1)
         {
-            m_list_destroy(list);
-            list = NULL;
+            m_list_destroy(&list);
             break;
         }
 
         data = m_mem_sized_malloc(data_size);
         if (fread(data->data, sizeof(uint8_t), data->size, fp) != data->size)
         {
-            m_list_destroy(list);
-            list = NULL;
+            m_list_destroy(&list);
             break;
         }
 
@@ -239,4 +255,18 @@ m_list_t *m_list_load_binary(FILE *fp)
     }
 
     return list;
+}
+
+static void delete_node(m_list_node_t **node)
+{
+    m_list_node_t *to_delete;
+
+    if ((*node)->copied == STORED)
+    {
+        free((*node)->data.data);
+    }
+
+    to_delete = (*node);
+    (*node) = (*node)->next;
+    free(to_delete);
 }

@@ -18,6 +18,7 @@ void m_list_iterator_destroy(m_list_iterator_t **iterator)
 {
     (*iterator)->list_reference->reference_counter--;
     free(*iterator);
+    *iterator = NULL;
 }
 
 void m_list_iterator_go_to_head(m_list_iterator_t *iterator) { iterator->curr = iterator->list_reference->head; }
