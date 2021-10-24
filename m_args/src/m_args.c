@@ -18,7 +18,7 @@ m_args_t *m_args_create()
 
 void m_args_destroy(m_args_t **args)
 {
-    m_list_destroy((*args)->arg_list);
+    m_list_destroy(&(*args)->arg_list);
     free(*args);
 }
 
@@ -56,25 +56,32 @@ bool m_args_parse(m_args_t *args, int argc, char **argv)
             }
         }
     }
+
+    m_list_iterator_destroy(&iterator);
 }
 
 m_args_entry_t *m_args_get(m_args_t *args, uint32_t id)
 {
     m_com_sized_data_t *tmp;
+    m_args_entry_t *entry = NULL;
     m_list_iterator_t *iterator = m_list_iterator_create(args->arg_list);
 
     for (m_list_iterator_go_to_head(iterator); (tmp = m_list_iterator_current(iterator)) != NULL;
          m_list_iterator_next(iterator))
     {
-        m_args_entry_t *entry = tmp->data;
+        entry = tmp->data;
 
         if (entry->id == id)
         {
-            return entry;
+            break;
         }
+
+        entry = NULL;
     }
 
-    return NULL;
+    m_list_iterator_destroy(&iterator);
+
+    return entry;
 }
 
 void m_args_add_entry(m_args_t *args, m_args_entry_t entry)
