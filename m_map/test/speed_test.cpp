@@ -79,7 +79,7 @@ int main(void)
         duration = duration_cast<microseconds>(sub_stop - sub_start);
         cout << "mlib read ms: " << duration.count() << endl;
 
-        m_map_destroy(mlib_map);
+        m_map_destroy(&mlib_map);
     }
     stop = high_resolution_clock::now();
     mlib_duration = duration = duration_cast<microseconds>(stop - start);

@@ -24,10 +24,28 @@ m_map_t *m_map_create(const uint32_t size)
     return map;
 }
 
-void m_map_destroy(m_map_t *map)
+void m_map_destroy(m_map_t **map)
 {
-    free(map->table);
-    free(map);
+    m_map_iterator_t *iterator = m_map_iterator_create(*map);
+    m_com_sized_data_t *tmp;
+
+    while ((tmp = m_map_iterator_key(iterator)))
+    {
+        m_map_iterator_next(iterator);
+        m_map_delete(*map, tmp);
+    }
+
+    m_map_iterator_destroy(&iterator);
+
+    if ((*map)->reference_count)
+    {
+        puts("ERROR: Map deleted with non-zero reference count");
+        printf("Map: %p, reference counter: %d\n", *map, (*map)->reference_count);
+    }
+
+    free((*map)->table);
+    free(*map);
+    *map = NULL;
 }
 
 m_com_sized_data_t *m_map_get(const m_map_t *const map, const m_com_sized_data_t *const key)

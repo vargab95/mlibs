@@ -52,7 +52,7 @@ int test_get_set()
         }
     }
 
-    m_map_destroy(map);
+    m_map_destroy(&map);
 
     printf("%s\t%d\n", __FUNCTION__, is_success);
     return is_success;
@@ -91,7 +91,7 @@ int test_read_store()
         }
     }
 
-    m_map_destroy(map);
+    m_map_destroy(&map);
 
     printf("%s\t%d\n", __FUNCTION__, is_success);
     return is_success;
@@ -123,7 +123,7 @@ int test_delete_copied()
         is_success = false;
     }
 
-    m_map_destroy(map);
+    m_map_destroy(&map);
 
     printf("%s\t%d\n", __FUNCTION__, is_success);
     return is_success;
@@ -153,7 +153,7 @@ int test_delete_not_copied()
         is_success = false;
     }
 
-    m_map_destroy(map);
+    m_map_destroy(&map);
 
     printf("%s\t%d\n", __FUNCTION__, is_success);
     return is_success;
@@ -190,7 +190,7 @@ int test_get_store()
         }
     }
 
-    m_map_destroy(map);
+    m_map_destroy(&map);
 
     printf("%s\t%d\n", __FUNCTION__, is_success);
     return is_success;
@@ -229,7 +229,7 @@ int test_read_set()
         }
     }
 
-    m_map_destroy(map);
+    m_map_destroy(&map);
 
     printf("%s\t%d\n", __FUNCTION__, is_success);
     return is_success;
@@ -264,7 +264,7 @@ int test_iterator_one_sized()
     }
 
     m_map_iterator_destroy(&iterator);
-    m_map_destroy(map);
+    m_map_destroy(&map);
 
     printf("%s\t%d\n", __FUNCTION__, is_success);
     return is_success;
@@ -306,7 +306,7 @@ int test_iterator_ten_sized()
     }
 
     m_map_iterator_destroy(&iterator);
-    m_map_destroy(map);
+    m_map_destroy(&map);
 
     printf("%s\t%d\n", __FUNCTION__, is_success);
     return is_success;
@@ -336,7 +336,7 @@ int test_iterator_empty()
     }
 
     m_map_iterator_destroy(&iterator);
-    m_map_destroy(map);
+    m_map_destroy(&map);
 
     printf("%s\t%d\n", __FUNCTION__, is_success);
     return is_success;

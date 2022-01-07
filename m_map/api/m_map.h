@@ -57,7 +57,7 @@ m_map_t *m_map_create(const uint32_t size);
  *
  * @param[in] map
  */
-void m_map_destroy(m_map_t *map);
+void m_map_destroy(m_map_t **map);
 
 /**
  * @brief

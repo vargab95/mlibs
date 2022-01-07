@@ -34,6 +34,12 @@ void m_list_destroy(m_list_t **list)
         delete_node(&tmp);
     }
 
+    if ((*list)->reference_counter)
+    {
+        puts("ERROR: List deleted with non-zero reference count");
+        printf("List: %p, reference counter: %d\n", *list, (*list)->reference_counter);
+    }
+
     free(*list);
     *list = NULL;
 }

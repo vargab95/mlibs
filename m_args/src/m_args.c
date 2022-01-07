@@ -51,13 +51,16 @@ static bool fill_arg_entry(m_args_entry_t *entry, int argc, char **argv)
     {
         bool found = FALSE;
         char *env_ptr;
-        if (strcmp(argv[i], entry->short_switch) == 0 || strcmp(argv[i], entry->long_switch) == 0)
+        bool short_switch_found = entry->short_switch && (strcmp(argv[i], entry->short_switch) == 0);
+        bool long_switch_found = entry->long_switch && (strcmp(argv[i], entry->long_switch) == 0);
+
+        if (short_switch_found || long_switch_found)
         {
             if (!entry->flags.no_value)
                 entry->value.string_val = argv[i + 1];
             found = TRUE;
         }
-        else if ((env_ptr = getenv(entry->environment_variable)) != NULL)
+        else if (entry->environment_variable && ((env_ptr = getenv(entry->environment_variable)) != NULL))
         {
             if (!entry->flags.no_value)
                 entry->value.string_val = env_ptr;
