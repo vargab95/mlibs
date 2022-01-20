@@ -1,3 +1,3 @@
 # mlibs
 
-Commonly used datastructures, algorithms and utility functions implemented in C for fun.
+Commonly used data structures, algorithms and utility functions implemented in C for fun.
