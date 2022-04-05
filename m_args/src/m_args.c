@@ -3,11 +3,16 @@
 #include <string.h>
 
 #include "config.h"
-#include "m_libs/m_args.h"
+#include "m_args.h"
 #include <m_libs/m_list.h>
 #include <m_libs/m_mem.h>
 
 static bool fill_arg_entry(m_args_entry_t *entry, int argc, char **argv);
+static void process_found_entry(m_args_entry_t *entry);
+static bool process_arg(m_args_entry_t *entry, int i, char **argv);
+static bool process_short_arg(m_args_entry_t *entry, int i, char **argv);
+static bool process_long_arg(m_args_entry_t *entry, int i, char **argv);
+static bool process_env_arg(m_args_entry_t *entry, int i, char **argv);
 
 m_args_t *m_args_create()
 {
@@ -49,44 +54,90 @@ static bool fill_arg_entry(m_args_entry_t *entry, int argc, char **argv)
 {
     for (int i = 0; i < argc; i++)
     {
-        bool found = FALSE;
-        char *env_ptr;
-        bool short_switch_found = entry->short_switch && (strcmp(argv[i], entry->short_switch) == 0);
-        bool long_switch_found = entry->long_switch && (strcmp(argv[i], entry->long_switch) == 0);
-
-        if (short_switch_found || long_switch_found)
+        if (process_arg(entry, i, argv))
         {
-            if (!entry->flags.no_value)
-                entry->value.string_val = argv[i + 1];
-            found = TRUE;
-        }
-        else if (entry->environment_variable && ((env_ptr = getenv(entry->environment_variable)) != NULL))
-        {
-            if (!entry->flags.no_value)
-                entry->value.string_val = env_ptr;
-            found = TRUE;
-        }
-
-        if (found)
-        {
-            switch (entry->expected_type)
-            {
-            case ARG_TYPE_INT:
-                entry->value.int_val = atoi(entry->value.string_val);
-                break;
-            case ARG_TYPE_FLOAT:
-                entry->value.float_val = atof(entry->value.string_val);
-                break;
-            case ARG_TYPE_STRING:
-                break;
-            }
-
-            entry->flags.present = 1;
+            process_found_entry(entry);
             break;
         }
     }
 
     return true;
+}
+
+static bool process_arg(m_args_entry_t *entry, int i, char **argv)
+{
+    switch (entry->preference)
+    {
+    case ARG_PREFER_SHORT:
+        return process_short_arg(entry, i, argv) && 
+               process_long_arg(entry, i, argv) && 
+               process_env_arg(entry, i, argv);
+    case ARG_PREFER_LONG:
+        return process_long_arg(entry, i, argv) && 
+               process_short_arg(entry, i, argv) && 
+               process_env_arg(entry, i, argv);
+    case ARG_PREFER_ENV:
+        return process_env_arg(entry, i, argv) && 
+               process_short_arg(entry, i, argv) && 
+               process_long_arg(entry, i, argv);
+    }
+
+    return FALSE;
+}
+
+static bool process_short_arg(m_args_entry_t *entry, int i, char **argv)
+{
+    if (entry->short_switch && (strcmp(argv[i], entry->short_switch) == 0))
+    {
+        if (!entry->flags.no_value)
+            entry->value.string_val = argv[i + 1];
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+static bool process_long_arg(m_args_entry_t *entry, int i, char **argv)
+{
+    if(entry->long_switch && (strcmp(argv[i], entry->long_switch) == 0))
+    {
+        if (!entry->flags.no_value)
+            entry->value.string_val = argv[i + 1];
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+static bool process_env_arg(m_args_entry_t *entry, int i, char **argv)
+{
+    char *env_ptr;
+
+    if (entry->environment_variable && ((env_ptr = getenv(entry->environment_variable)) != NULL))
+    {
+        if (!entry->flags.no_value)
+            entry->value.string_val = env_ptr;
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+static void process_found_entry(m_args_entry_t *entry)
+{
+    switch (entry->expected_type)
+    {
+    case ARG_TYPE_INT:
+        entry->value.int_val = atoi(entry->value.string_val);
+        break;
+    case ARG_TYPE_FLOAT:
+        entry->value.float_val = atof(entry->value.string_val);
+        break;
+    case ARG_TYPE_STRING:
+        break;
+    }
+
+    entry->flags.present = 1;
 }
 
 m_args_entry_t *m_args_get(m_args_t *args, uint32_t id)
