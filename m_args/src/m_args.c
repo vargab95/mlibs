@@ -14,11 +14,12 @@ static bool process_short_arg(m_args_entry_t *entry, int i, char **argv);
 static bool process_long_arg(m_args_entry_t *entry, int i, char **argv);
 static bool process_env_arg(m_args_entry_t *entry, int i, char **argv);
 
-m_args_t *m_args_create()
+m_args_t *m_args_create(const char *description)
 {
     m_args_t *args = (m_args_t *)m_mem_malloc(sizeof(m_args_t));
 
     args->arg_list = m_list_create();
+    args->description = description;
 
     return args;
 }
@@ -69,16 +70,16 @@ static bool process_arg(m_args_entry_t *entry, int i, char **argv)
     switch (entry->preference)
     {
     case ARG_PREFER_SHORT:
-        return process_short_arg(entry, i, argv) && 
-               process_long_arg(entry, i, argv) && 
+        return process_short_arg(entry, i, argv) || 
+               process_long_arg(entry, i, argv) || 
                process_env_arg(entry, i, argv);
     case ARG_PREFER_LONG:
-        return process_long_arg(entry, i, argv) && 
-               process_short_arg(entry, i, argv) && 
+        return process_long_arg(entry, i, argv) || 
+               process_short_arg(entry, i, argv) || 
                process_env_arg(entry, i, argv);
     case ARG_PREFER_ENV:
-        return process_env_arg(entry, i, argv) && 
-               process_short_arg(entry, i, argv) && 
+        return process_env_arg(entry, i, argv) || 
+               process_short_arg(entry, i, argv) || 
                process_long_arg(entry, i, argv);
     }
 
@@ -172,4 +173,70 @@ void m_args_add_entry(m_args_t *args, m_args_entry_t entry)
     tmp.data = &entry;
 
     m_list_append_to_end_store(args->arg_list, &tmp);
+}
+
+void m_args_print_help(m_args_t *args)
+{
+    m_com_sized_data_t *tmp;
+    m_args_entry_t *entry = NULL;
+    m_list_iterator_t *iterator = m_list_iterator_create(args->arg_list);
+
+    printf("%s", args->executable);
+    if (args->description)
+    {
+        printf(" - %s", args->description);
+    }
+    puts("\n\nParameters:");
+
+    for (m_list_iterator_go_to_head(iterator); (tmp = m_list_iterator_current(iterator)) != NULL;
+         m_list_iterator_next(iterator))
+    {
+        boolean printed = false;
+
+        entry = tmp->data;
+
+        if (entry->short_switch)
+        {
+            printf("    %s", entry->short_switch);
+            printed = true;
+        }
+
+        if (entry->long_switch)
+        {
+            if (printed)
+            {
+                printf(" | %s", entry->long_switch);       
+            }
+            else
+            {
+                printf("    %s", entry->long_switch);       
+            }
+            printed = true;
+        }
+
+        if (entry->environment_variable)
+        {
+            if (printed)
+            {
+                printf(" | ENV:%s", entry->environment_variable);       
+            }
+            else
+            {
+                printf("    ENV:%s", entry->environment_variable);       
+            }
+            printed = true;
+        }
+
+        if (printed)
+        {
+            if (entry->description) 
+            {
+                printf(" - %s", entry->description);
+            }
+
+            putchar('\n');
+        }
+    }
+
+    m_list_iterator_destroy(&iterator);
 }

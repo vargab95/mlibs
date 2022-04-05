@@ -11,6 +11,8 @@ typedef struct
 {
     uint32_t id;
 
+    char *description;
+
     char *short_switch;
     char *long_switch;
     char *environment_variable;
@@ -47,14 +49,17 @@ typedef struct
 
 typedef struct
 {
+    char *executable;
+    char *description;
     m_list_t *arg_list;
 } m_args_t;
 
-m_args_t *m_args_create();
+m_args_t *m_args_create(const char *description);
 void m_args_destroy(m_args_t **args);
 
 bool m_args_parse(m_args_t *args, int argc, char **argv);
 m_args_entry_t *m_args_get(m_args_t *args, uint32_t id);
 void m_args_add_entry(m_args_t *args, m_args_entry_t entry);
+void m_args_print_help(m_args_t *args);
 
 #endif
