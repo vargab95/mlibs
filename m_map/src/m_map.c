@@ -3,8 +3,15 @@
 
 #include "config.h"
 #include "m_map.h"
+#include "types.h"
+
+#if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_hash.h>
 #include <m_libs/m_mem.h>
+#else
+#include "../../m_hash/api/m_hash.h"
+#include "../../m_mem/api/m_mem.h"
+#endif
 
 static m_map_element_t *get_root_element(const m_map_t *const map, const m_com_sized_data_t *const key);
 static m_map_element_t *find_sub_element(const m_map_element_t *const root, const m_com_sized_data_t *const key);

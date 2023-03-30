@@ -1,6 +1,11 @@
 #include "m_list.h"
+#include "types.h"
 
+#if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_mem.h>
+#else
+#include "../../m_mem/api/m_mem.h"
+#endif
 
 m_list_iterator_t *m_list_iterator_create(m_list_t *list)
 {

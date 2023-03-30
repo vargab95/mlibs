@@ -4,8 +4,12 @@
 
 #include "config.h"
 #include "m_args.h"
-#include <m_libs/m_list.h>
+
+#if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_mem.h>
+#else
+#include "../../m_mem/api/m_mem.h"
+#endif
 
 static bool fill_arg_entry(m_args_entry_t *entry, int argc, char **argv);
 static void process_found_entry(m_args_entry_t *entry);
@@ -19,7 +23,7 @@ m_args_t *m_args_create(const char *description)
     m_args_t *args = (m_args_t *)m_mem_malloc(sizeof(m_args_t));
 
     args->arg_list = m_list_create();
-    args->description = description;
+    args->description = (char *)description;
 
     return args;
 }
@@ -70,16 +74,16 @@ static bool process_arg(m_args_entry_t *entry, int i, char **argv)
     switch (entry->preference)
     {
     case ARG_PREFER_SHORT:
-        return process_short_arg(entry, i, argv) || 
-               process_long_arg(entry, i, argv) || 
+        return process_short_arg(entry, i, argv) ||
+               process_long_arg(entry, i, argv) ||
                process_env_arg(entry, i, argv);
     case ARG_PREFER_LONG:
-        return process_long_arg(entry, i, argv) || 
-               process_short_arg(entry, i, argv) || 
+        return process_long_arg(entry, i, argv) ||
+               process_short_arg(entry, i, argv) ||
                process_env_arg(entry, i, argv);
     case ARG_PREFER_ENV:
-        return process_env_arg(entry, i, argv) || 
-               process_short_arg(entry, i, argv) || 
+        return process_env_arg(entry, i, argv) ||
+               process_short_arg(entry, i, argv) ||
                process_long_arg(entry, i, argv);
     }
 
@@ -205,11 +209,11 @@ void m_args_print_help(m_args_t *args)
         {
             if (printed)
             {
-                printf(" | %s", entry->long_switch);       
+                printf(" | %s", entry->long_switch);
             }
             else
             {
-                printf("    %s", entry->long_switch);       
+                printf("    %s", entry->long_switch);
             }
             printed = true;
         }
@@ -218,18 +222,18 @@ void m_args_print_help(m_args_t *args)
         {
             if (printed)
             {
-                printf(" | ENV:%s", entry->environment_variable);       
+                printf(" | ENV:%s", entry->environment_variable);
             }
             else
             {
-                printf("    ENV:%s", entry->environment_variable);       
+                printf("    ENV:%s", entry->environment_variable);
             }
             printed = true;
         }
 
         if (printed)
         {
-            if (entry->description) 
+            if (entry->description)
             {
                 printf(" - %s", entry->description);
             }

@@ -4,8 +4,17 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_common.h>
 #include <m_libs/m_list.h>
+#else
+#include "../../m_common/api/m_common.h"
+#include "../../m_list/api/m_list.h"
+#endif
+
+/** @file m_args.h
+ * m_args public definitions.
+ */
 
 typedef struct
 {

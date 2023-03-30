@@ -4,38 +4,22 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_common.h>
+#else
+#include "../../m_common/api/m_common.h"
+#endif
+
+/** @file m_map.h
+ * m_map public definitions.
+ */
 
 /**
- * @brief Type definition for map elements
+ * @brief Type definition for map
  */
-typedef struct m_map_element_t
-{
-    uint8_t copied : 2;
-    uint8_t is_data_node : 1; /**< Signs if the node is not root */
-    uint8_t reserved : 5;     /**< reserved for further flags */
-    m_com_sized_data_t key;
-    m_com_sized_data_t data;
-    struct m_map_element_t *next;
-    struct m_map_element_t **prev_ptr;
-} m_map_element_t;
-
-/**
- * @brief Type definition for map data structure
- */
-typedef struct
-{
-    uint32_t size;
-    m_map_element_t *table;
-    uint32_t reference_count;
-} m_map_t;
-
-typedef struct
-{
-    m_map_t *map;
-    uint32_t hash_table_idx;
-    m_map_element_t *element;
-} m_map_iterator_t;
+typedef struct m_map_element_t m_map_element_t;
+typedef struct m_map_t m_map_t;
+typedef struct m_map_iterator_t m_map_iterator_t;
 
 m_map_iterator_t *m_map_iterator_create(m_map_t *map);
 void m_map_iterator_destroy(m_map_iterator_t **iterator);
@@ -45,7 +29,7 @@ m_com_sized_data_t *m_map_iterator_value(const m_map_iterator_t *const iterator)
 void m_map_iterator_reset(m_map_iterator_t *iterator);
 
 /**
- * @brief New map creation
+ * @brief Create a new map with a specified table size.
  *
  * @param[in] size
  * @return m_map_t*
@@ -81,7 +65,7 @@ void m_map_set(const m_map_t *const map, const m_com_sized_data_t *const key, co
 /**
  * @brief Reads the data from the temporary buffer to the given buffer
  *
- * !!! AWARE !!! The allocated memory shall be as big as the stored information's
+ * !!! WARNING !!! The allocated memory shall be at least as big as the stored information's.
  *
  * @param[in] map
  * @param[in] key

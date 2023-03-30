@@ -6,9 +6,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_common.h>
+#else
+#include "../../m_common/api/m_common.h"
+#endif
 
-enum
+/** @file m_mem.h
+ * m_mem public definitions.
+ */
+
+typedef enum
 {
     NOT_USED = 0,
     STORED,

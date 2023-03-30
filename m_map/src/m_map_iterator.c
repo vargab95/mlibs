@@ -1,5 +1,11 @@
 #include "m_map.h"
+#include "types.h"
+
+#if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_mem.h>
+#else
+#include "../../m_mem/api/m_mem.h"
+#endif
 
 static void find_and_set_next_table_root(m_map_iterator_t *iterator);
 

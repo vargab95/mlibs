@@ -4,7 +4,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_common.h>
+#else
+#include "../../m_common/api/m_common.h"
+#endif
+
+/** @file m_hash.h
+ * m_hash public definitions.
+ */
 
 /**
  * @brief D. J. Bernstein hash function

@@ -5,6 +5,21 @@ project(m_common VERSION 1.0.0 DESCRIPTION "Common elements of mlibs.")
 option(BUILD_DOC "Build documentation" ON)
 option(BUILD_TEST "Build tests" ON)
 
+if (NOT TARGET doc)
+    find_package(Doxygen
+                 REQUIRED dot
+                 OPTIONAL_COMPONENTS mscgen dia)
+
+    set(DOXYGEN_GENERATE_HTML YES)
+    set(DOXYGEN_GENERATE_MAN YES)
+
+    doxygen_add_docs(
+        doc
+        ${PROJECT_SOURCE_DIR}
+        COMMENT "Generate documentation"
+    )
+endif()
+
 add_library(m_common SHARED
             ${CMAKE_CURRENT_SOURCE_DIR}/src/m_common.c
             ${CMAKE_CURRENT_SOURCE_DIR}/api/m_common.h)

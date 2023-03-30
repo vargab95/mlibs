@@ -1,7 +1,12 @@
 #include <stdio.h>
 
 #include "m_hash.h"
+
+#if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_common.h>
+#else
+#include "../../m_common/api/m_common.h"
+#endif
 
 int main(void)
 {

@@ -2,7 +2,12 @@
 #include <string.h>
 
 #include "../api/m_str.h"
+
+#if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_mem.h>
+#else
+#include "../../m_mem/api/m_mem.h"
+#endif
 
 int test_normal_split();
 int test_normal_join();

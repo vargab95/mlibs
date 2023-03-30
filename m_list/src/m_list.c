@@ -2,7 +2,13 @@
 #include <stdlib.h>
 
 #include "m_list.h"
+#include "types.h"
+
+#if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_mem.h>
+#else
+#include "../../m_mem/api/m_mem.h"
+#endif
 
 static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const value, boolean multi);
 static void append_to_end_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy);
