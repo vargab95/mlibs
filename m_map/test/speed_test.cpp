@@ -49,7 +49,7 @@ int main(void)
 
     start = high_resolution_clock::now();
     {
-        m_map_t *mlib_map = m_map_create(4096);
+        m_map_t *mlib_map = m_map_create(10000);
         m_com_sized_data_t key, value;
         m_com_sized_data_t *result;
         int i;
@@ -72,8 +72,8 @@ int main(void)
         sub_start = high_resolution_clock::now();
         for (int i = 0; i < test_count; i++)
         {
-            // result = m_map_get(mlib_map, &key);
-            result = m_map_read(mlib_map, &key, &value);
+            result = m_map_get(mlib_map, &key);
+            // result = m_map_read(mlib_map, &key, &value);
         }
         sub_stop = high_resolution_clock::now();
         duration = duration_cast<microseconds>(sub_stop - sub_start);
