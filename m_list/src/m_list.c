@@ -112,6 +112,17 @@ void m_list_print(const m_list_t *const list)
     putchar('\n');
 }
 
+void m_list_custom_print(const m_list_t *const list, void (*func)(const m_com_sized_data_t* const))
+{
+    m_list_node_t *tmp = list->head;
+    int i = 0;
+    while (tmp)
+    {
+        func(&tmp->data);
+        tmp = tmp->next;
+    }
+}
+
 static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const value, boolean multi)
 {
     struct m_list_node_t *tmp;
@@ -231,6 +242,18 @@ void m_list_dump_binary(const m_list_t *const list, FILE *fp)
     {
         fwrite(&tmp->data.size, sizeof(tmp->data.size), 1, fp);
         fwrite(tmp->data.data, sizeof(uint8_t), tmp->data.size, fp);
+        tmp = tmp->next;
+    }
+}
+
+void m_list_custom_dump_binary(const m_list_t *const list,
+                               FILE *fp,
+                               void (*func)(const m_com_sized_data_t* const, FILE *fp))
+{
+    m_list_node_t *tmp = list->head;
+    while (tmp)
+    {
+        func(&tmp->data, fp);
         tmp = tmp->next;
     }
 }

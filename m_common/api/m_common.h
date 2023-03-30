@@ -7,10 +7,9 @@
  * m_common public definitions.
  */
 
-/**
- * @brief Boolean value definitions
- */
+/** @brief True boolean value */
 #define TRUE 1
+/** @brief False boolean value */
 #define FALSE 0
 
 /**

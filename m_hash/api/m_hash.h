@@ -17,18 +17,16 @@
 /**
  * @brief D. J. Bernstein hash function
  *
- * @param[in] input
- * @param[in] size
- * @return uint32_t
+ * @param[in] input Input in the commonly used m_common format.
+ * @return uint32_t The 32 bit hash.
  */
 extern uint32_t m_hash_djb(const m_com_sized_data_t *input);
 
 /**
  * @brief FNV hash function, variant 1a
  *
- * @param[in] input
- * @param[in] size
- * @return uint32_t
+ * @param[in] input Input in the commonly used m_common format.
+ * @return uint32_t The 32 bit hash.
  */
 extern uint32_t m_hash_fnv1a(const m_com_sized_data_t *input);
 
