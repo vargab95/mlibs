@@ -57,7 +57,7 @@ if (BUILD_TEST)
 
     add_executable(m_list_unit_test
                    ${CMAKE_CURRENT_SOURCE_DIR}/test/append.cpp
-                   ${CMAKE_CURRENT_SOURCE_DIR}/test/iterate.cpp
+                   ${CMAKE_CURRENT_SOURCE_DIR}/test/iterator.cpp
                    ${CMAKE_CURRENT_SOURCE_DIR}/test/delete.cpp)
 
     target_link_libraries(m_list_unit_test m_list GTest::gtest GTest::gtest_main)
