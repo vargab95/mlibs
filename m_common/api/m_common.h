@@ -17,12 +17,13 @@
  */
 typedef unsigned char boolean;
 
-/**
- * @brief Common structure for sized objects
- */
+/** @brief Common structure for sized objects */
 typedef struct
 {
+    /** Generic pointer to the data */
     void *data;
+
+    /** Size of the pointed data */
     size_t size;
 } m_com_sized_data_t;
 

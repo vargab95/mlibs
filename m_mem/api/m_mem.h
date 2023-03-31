@@ -16,70 +16,92 @@
  * m_mem public definitions.
  */
 
-typedef enum
-{
-    NOT_USED = 0,
-    STORED,
-    SET
-} copy_state_t;
-
 /**
- * @brief
+ * @brief malloc wrapper.
  *
- * @param size
- * @return void*
+ * If the memory allocation is not successful, it aborts the process.
+ *
+ * @param[in] size Size of the data to be allocated.
+ * @return void* Pointer to the allocated memory.
  */
 void *m_mem_malloc(size_t size);
 
 /**
- * @brief
+ * @brief calloc wrapper.
  *
- * @param number
- * @param size
- * @return void*
+ * If the memory allocation is not successful, it aborts the process.
+ *
+ * @param[in] size Size of the data to be allocated.
+ * @param[in] number Number of the data segments to be allocated.
+ * @return void* Pointer to the allocated memory.
  */
 void *m_mem_calloc(uint32_t number, size_t size);
 
 /**
- * @brief
+ * @brief malloc wrapper using the common sized memory structure.
  *
- * @param size
- * @return void*
+ * @param[in] size Size of the data to be allocated.
+ * @return void* Pointer to the allocated memory.
  */
 m_com_sized_data_t *m_mem_sized_malloc(size_t size);
 
 /**
- * @brief
+ * @brief calloc wrapper using the common sized memory structure.
  *
- * @param number
- * @param size
- * @return void*
+ * @param[in] size Size of the data to be allocated.
+ * @param[in] number Number of the data segments to be allocated.
+ * @return void* Pointer to the allocated memory.
  */
 m_com_sized_data_t *m_mem_sized_calloc(uint32_t number, size_t size);
 
 /**
- * @brief
+ * @brief free wrapper.
  *
- * @param[in|out] address
- * @return void
+ * The pointer to pointer is necessary, because this function sets
+ * the pointer to NULL after freeing it to avoid use after free
+ * problems.
+ *
+ * @param[inout] address Address to be freed.
  */
 void m_mem_free(void **address);
 
+/**
+ * @brief free wrapper using the common sized memory structure.
+ *
+ * @param[inout] data m_com data to be freed.
+ */
 void m_mem_sized_free(m_com_sized_data_t *data);
 
 /**
- * @brief
+ * @brief memcmp wrapper using the common sized memory structure.
  *
+ * @param[in] ptr1 First data to be compared.
+ * @param[in] ptr2 Second data to be compared.
  */
 bool m_mem_cmp(const m_com_sized_data_t *const ptr1, const m_com_sized_data_t *const ptr2);
 
 /**
- * @brief
+ * @brief memcpy wrapper using the common sized memory structure.
  *
+ * @param[in] source Source pointer.
+ * @param[in] destination Destination pointer.
  */
 void m_mem_copy(const m_com_sized_data_t *const source, m_com_sized_data_t *const destination);
 
+/**
+ * @brief Dumps data in binary format.
+ *
+ * @param[in] data Data to be dumped.
+ * @param[in] fp File pointer to be used.
+ */
 void m_mem_dump(const m_com_sized_data_t *const data, FILE *fp);
+
+/**
+ * @brief Dumps data in text (ASCII) format.
+ *
+ * @param[in] data Data to be dumped.
+ * @param[in] fp File pointer to be used.
+ */
 void m_mem_text_dump(const m_com_sized_data_t *const data, FILE *fp);
 
 #endif

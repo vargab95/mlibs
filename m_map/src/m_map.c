@@ -142,6 +142,24 @@ void m_map_print(const m_map_t *const map)
     }
 }
 
+void m_map_custom_print(const m_map_t *const map,
+                        void (*func)(const m_com_sized_data_t* const, const m_com_sized_data_t* const))
+{
+    m_map_element_t *element;
+    for (int idx = 0; idx < map->size; idx++)
+    {
+        element = map->table[idx].next;
+        while (element)
+        {
+            if (element->data.data)
+            {
+                func(&element->key, &element->data);
+            }
+            element = element->next;
+        }
+    }
+}
+
 static m_map_element_t *get_root_element(const m_map_t *const map, const m_com_sized_data_t *const key)
 {
     uint32_t hash;

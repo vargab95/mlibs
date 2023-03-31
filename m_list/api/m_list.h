@@ -32,7 +32,7 @@ m_list_t *m_list_create();
 /**
  * @brief Destroys a list.
  *
- * @param[in] list The list to destroy.
+ * @param[inout] list The list to destroy.
  */
 void m_list_destroy(m_list_t **list);
 
@@ -149,23 +149,23 @@ m_list_iterator_t *m_list_iterator_create(m_list_t *list);
 /**
  * @brief Destroy an iterator.
  *
- * @param[in] iterator The iterator to be destroyed.
- *                     Double pointer is used to be able to reset the pointer's value
- *                     to NULL to avoid use after free.
+ * @param[inout] iterator The iterator to be destroyed.
+ *                        Double pointer is used to be able to reset the pointer's value
+ *                        to NULL to avoid use after free.
  */
 void m_list_iterator_destroy(m_list_iterator_t **iterator);
 
 /**
  * @brief Reset the iterator to the beginning of a list.
  *
- * @param[in] iterator The iterator to be used.
+ * @param[inout] iterator The iterator to be used.
  */
 void m_list_iterator_go_to_head(m_list_iterator_t *iterator);
 
 /**
  * @brief Reset the iterator to the end of a list.
  *
- * @param[in] iterator The iterator to be used.
+ * @param[inout] iterator The iterator to be used.
  */
 void m_list_iterator_go_to_tail(m_list_iterator_t *iterator);
 
@@ -180,7 +180,7 @@ m_com_sized_data_t *m_list_iterator_current(const m_list_iterator_t *const itera
 /**
  * @brief Steps to the next node of the list and returns the it's data.
  *
- * @param[in] iterator The iterator to be used.
+ * @param[inout] iterator The iterator to be used.
  * @return Data stored in the next list node.
  */
 m_com_sized_data_t *m_list_iterator_next(m_list_iterator_t *iterator);
@@ -188,7 +188,7 @@ m_com_sized_data_t *m_list_iterator_next(m_list_iterator_t *iterator);
 /**
  * @brief Steps to the previous node of the list and returns the it's data.
  *
- * @param[in] iterator The iterator to be used.
+ * @param[inout] iterator The iterator to be used.
  * @return Data stored in the previous list node.
  */
 m_com_sized_data_t *m_list_iterator_previous(m_list_iterator_t *iterator);

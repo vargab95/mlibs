@@ -24,16 +24,21 @@
  */
 typedef struct
 {
+    /** Number of tokens resulted by splitting */
     int token_count;
+
+    /** An array of the token pointers */
     char **tokens;
+
+    /** The original string */
     char *string;
 } m_str_split_result_t;
 
 /**
  * Converts the C string to the m_com format.
  *
- * @param[in] string
- * @param[out] String in the common format
+ * @param[in] string String to be converted.
+ * @param[out] output Output string using the common sized data format.
  */
 void m_str_convert_to_com(const char *string, m_com_sized_data_t *output);
 

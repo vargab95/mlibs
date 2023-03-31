@@ -32,4 +32,12 @@ struct m_map_iterator_t
     m_map_element_t *element;
 };
 
+/** @brief Enumeration to store whether the data of an element was copied or stored */
+typedef enum
+{
+    NOT_USED = 0,
+    STORED,
+    SET
+} copy_state_t;
+
 #endif

@@ -16,34 +16,78 @@
  * m_args public definitions.
  */
 
-/**
- * @brief Describes a possible command line argument.
- */
+/** @brief Describes a possible command line argument. */
 typedef struct
 {
+    /** Unique identifier */
     uint32_t id;
 
+    /** Description. Used in the print_help method. */
     char *description;
 
+    /**
+     * Short switch of the command line argument. Should be specified in the "-s" format.
+     * If set to NULL, it means that the argument does not have a short switch.
+     */
     char *short_switch;
+
+    /**
+     * Long switch of the command line argument. Should be specified in the "--switch" format.
+     * If set to NULL, it means that the argument does not have a long switch.
+     */
     char *long_switch;
+
+    /**
+     * Environment variable for the command line argument. Should be specified
+     * in the "SWITCH_ENV_VAR" format. If set to NULL, it means that the argument does not
+     * cannot be set using an environment variable.
+     */
     char *environment_variable;
 
+    /** Option and status flags */
     struct
     {
+        /**
+         * Makes the command line argument required. If specified for an argument but it
+         * was not specified, m_args_parse will return false.
+         */
         uint8_t required : 1;
+
+        /**
+         * Option flag for automatic conversion. If set, then m_args will try to parse it
+         * in the format, specified by expected_type.
+         */
         uint8_t convert : 1;
+
+        /**
+         * Status flag which shows wheter the argument was present. Should not be set
+         * externally.
+         */
         uint8_t present : 1;
+
+        /**
+         * Option flag to disable value parsing. If this flag is set, m_args will not
+         * try to read the next value of the command line arguments as a value for this
+         * element.
+         */
         uint8_t no_value : 1;
+
+        /** Reserved option and status flags for future use. */
         uint8_t __reserved : 4;
     } flags;
 
+    /** Expected type of the command line argument's value */
     enum
     {
         ARG_TYPE_STRING = 0,
         ARG_TYPE_INT = 1,
         ARG_TYPE_FLOAT = 2
     } expected_type;
+
+    /**
+     * The value of the command line argument. Should be interpreted together with
+     * the expected_type field.
+     */
     union
     {
         char *string_val;
@@ -51,6 +95,12 @@ typedef struct
         float float_val;
     } value;
 
+    /**
+     * Sets the preference of a command line switch. It can be used to override already
+     * set options. For example, if an environment variable is used as a default, but
+     * users could override it by using a short or a long switch, then it should be set
+     * as preferred.
+     */
     enum
     {
         ARG_PREFER_SHORT = 0,
@@ -64,8 +114,16 @@ typedef struct
  */
 typedef struct
 {
+    /** Name or path of the executable (argv[0]), set automatically by m_args_create */
     char *executable;
+
+    /** Description of the tool, set by m_args_create. Used in print_help. */
     char *description;
+
+    /**
+     * List of the configured command line arguments. Should not be read directly.
+     * Use m_args_get instead.
+     */
     m_list_t *arg_list;
 } m_args_t;
 
