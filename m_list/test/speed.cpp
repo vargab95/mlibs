@@ -1,3 +1,5 @@
+#include <gtest/gtest.h>
+
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -14,9 +16,9 @@ extern "C"
 using namespace std;
 using namespace std::chrono;
 
-const int test_count = 100000;
+const int test_count = 1000;
 
-int main(void)
+TEST(m_list_speed_tests, faster_than_std_map)
 {
     system_clock::time_point start, stop, sub_start, sub_stop;
     microseconds duration, mlib_duration, std_duration;
@@ -32,7 +34,6 @@ int main(void)
         }
         sub_stop = high_resolution_clock::now();
         duration = duration_cast<microseconds>(sub_stop - sub_start);
-        cout << "std write ms: " << duration.count() << endl;
 
         sub_start = high_resolution_clock::now();
         for (int i = 0; i < test_count; i++)
@@ -41,11 +42,9 @@ int main(void)
         }
         sub_stop = high_resolution_clock::now();
         duration = duration_cast<microseconds>(sub_stop - sub_start);
-        cout << "std read ms: " << duration.count() << endl;
     }
     stop = high_resolution_clock::now();
     std_duration = duration = duration_cast<microseconds>(stop - start);
-    cout << "std whole ms: " << duration.count() << endl;
 
     start = high_resolution_clock::now();
     {
@@ -65,7 +64,6 @@ int main(void)
         }
         sub_stop = high_resolution_clock::now();
         duration = duration_cast<microseconds>(sub_stop - sub_start);
-        cout << "mlib write ms: " << duration.count() << endl;
 
         sub_start = high_resolution_clock::now();
         for (int i = 0; i < test_count; i++)
@@ -74,12 +72,11 @@ int main(void)
         }
         sub_stop = high_resolution_clock::now();
         duration = duration_cast<microseconds>(sub_stop - sub_start);
-        cout << "mlib read ms: " << duration.count() << endl;
 
-        m_list_destroy(mlib_list);
+        m_list_destroy(&mlib_list);
     }
     stop = high_resolution_clock::now();
     mlib_duration = duration = duration_cast<microseconds>(stop - start);
-    cout << "mlib whole ms: " << duration.count() << endl;
-    printf("whole ratio %3.2f %%\n", std_duration * 100.0 / mlib_duration);
+
+    EXPECT_GT(std_duration * 100.0 / mlib_duration, 100);
 }

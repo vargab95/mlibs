@@ -5,7 +5,7 @@ project(m_common VERSION 1.0.0 DESCRIPTION "Common elements of mlibs.")
 option(BUILD_DOC "Build documentation" ON)
 option(BUILD_TEST "Build tests" ON)
 
-if (NOT TARGET doc)
+if (NOT TARGET doc AND BUILD_DOC)
     find_package(Doxygen
                  REQUIRED dot
                  OPTIONAL_COMPONENTS mscgen dia)
@@ -18,6 +18,11 @@ if (NOT TARGET doc)
         ${PROJECT_SOURCE_DIR}
         COMMENT "Generate documentation"
     )
+endif()
+
+if (BUILD_TEST)
+    enable_testing()
+    find_package(GTest REQUIRED)
 endif()
 
 add_library(m_common SHARED

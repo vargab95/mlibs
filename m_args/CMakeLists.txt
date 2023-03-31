@@ -11,7 +11,7 @@ if (NOT COMPOSITE_BUILD)
     find_library(M_LIST_LIB NAMES m_list libm_list)
 endif()
 
-if (NOT TARGET doc)
+if (NOT TARGET doc AND BUILD_DOC)
     find_package(Doxygen
                  REQUIRED dot
                  OPTIONAL_COMPONENTS mscgen dia)
@@ -24,6 +24,11 @@ if (NOT TARGET doc)
         ${PROJECT_SOURCE_DIR}
         COMMENT "Generate documentation"
     )
+endif()
+
+if (BUILD_TEST)
+    enable_testing()
+    find_package(GTest REQUIRED)
 endif()
 
 add_library(m_args SHARED

@@ -12,7 +12,7 @@ m_list_iterator_t *m_list_iterator_create(m_list_t *list)
     m_list_iterator_t *iterator;
 
     iterator = (m_list_iterator_t *)m_mem_malloc(sizeof(m_list_iterator_t));
-    iterator->curr = NULL;
+    iterator->curr = list->head;
     iterator->list_reference = list;
     list->reference_counter++;
 
@@ -48,6 +48,11 @@ m_com_sized_data_t *m_list_iterator_next(m_list_iterator_t *iterator)
     }
 
     iterator->curr = iterator->curr->next;
+    if (iterator->curr == NULL)
+    {
+        return NULL;
+    }
+
     return &iterator->curr->data;
 }
 
@@ -59,5 +64,10 @@ m_com_sized_data_t *m_list_iterator_previous(m_list_iterator_t *iterator)
     }
 
     iterator->curr = iterator->curr->prev;
+    if (iterator->curr == NULL)
+    {
+        return NULL;
+    }
+
     return &iterator->curr->data;
 }

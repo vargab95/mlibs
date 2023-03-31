@@ -2,22 +2,32 @@ cmake_minimum_required(VERSION 3.13)
 
 project(mlibs VERSION 1.0.0 DESCRIPTION "A collection of basic C libraries.")
 
-find_package(Doxygen
-             REQUIRED dot
-             OPTIONAL_COMPONENTS mscgen dia)
+option(BUILD_DOC "Build documentation" ON)
+option(BUILD_TEST "Build tests" ON)
 
 set(COMPOSITE_BUILD YES)
 add_compile_definitions(COMPOSITE_BUILD=1)
 
-set(DOXYGEN_GENERATE_HTML YES)
-set(DOXYGEN_GENERATE_MAN YES)
-set(DOXYGEN_EXCLUDE_PATTERNS */inc/*)
+if (BUILD_DOC)
+    set(DOXYGEN_GENERATE_HTML YES)
+    set(DOXYGEN_GENERATE_MAN YES)
+    set(DOXYGEN_EXCLUDE_PATTERNS */inc/*)
 
-doxygen_add_docs(
-    doc
-    ${PROJECT_SOURCE_DIR}
-    COMMENT "Generate documentation"
-)
+    find_package(Doxygen
+                 REQUIRED dot
+                 OPTIONAL_COMPONENTS mscgen dia)
+
+    doxygen_add_docs(
+        doc
+        ${PROJECT_SOURCE_DIR}
+        COMMENT "Generate documentation"
+    )
+endif()
+
+if (BUILD_TEST)
+    enable_testing()
+    find_package(GTest REQUIRED)
+endif()
 
 option(BUILD_M_COMMON "Enable building m_common" ON)
 if(BUILD_M_COMMON)

@@ -37,3 +37,6 @@
 # Build related
 build/
 Debug/
+
+# CTags
+tags
