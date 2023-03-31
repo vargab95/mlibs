@@ -145,7 +145,7 @@ void m_list_print(const m_list_t *const list)
 void m_list_custom_print(const m_list_t *const list, void (*func)(const m_com_sized_data_t* const))
 {
     m_list_node_t *tmp = list->head;
-    int i = 0;
+
     while (tmp)
     {
         func(&tmp->data);
@@ -167,8 +167,6 @@ static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const 
     {
         if (m_mem_cmp(&tmp->data, value))
         {
-            m_list_node_t *to_delete;
-
             if (tmp->prev != NULL)
             {
                 tmp->prev->next = tmp->next;
