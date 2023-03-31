@@ -50,11 +50,41 @@ void m_list_destroy(m_list_t **list)
     *list = NULL;
 }
 
+size_t m_list_get_size(const m_list_t *const list)
+{
+    if (list == NULL)
+    {
+        return 0;
+    }
+
+    return list->size;
+}
+
+m_com_sized_data_t* m_list_get_first(const m_list_t *const list)
+{
+    if (list == NULL || list->head == NULL)
+    {
+        return NULL;
+    }
+
+    return &list->head->data;
+}
+
+m_com_sized_data_t* m_list_get_last(const m_list_t *const list)
+{
+    if (list == NULL || list->tail == NULL)
+    {
+        return NULL;
+    }
+
+    return &list->tail->data;
+}
+
 m_com_sized_data_t *m_list_get_by_id(const m_list_t *const list, uint32_t id)
 {
     m_list_node_t *tmp = list->head;
 
-    for (int i = 0; i < list->size && i != id; i++, tmp = tmp->next)
+    for (size_t i = 0; i < list->size && i != id; i++, tmp = tmp->next)
         ;
 
     return &tmp->data;

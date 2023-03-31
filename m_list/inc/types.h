@@ -24,7 +24,7 @@ struct m_list_node_t
  */
 struct m_list_t
 {
-    uint32_t size;
+    size_t size;
     uint32_t reference_counter;
     m_list_node_t *head;
     m_list_node_t *tail;

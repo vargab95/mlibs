@@ -37,6 +37,30 @@ m_list_t *m_list_create();
 void m_list_destroy(m_list_t **list);
 
 /**
+ * @brief Gets the size of a list.
+ *
+ * @param[in] list The list to use.
+ * @return Size of the list.
+ */
+size_t m_list_get_size(const m_list_t *const list);
+
+/**
+ * @brief Returns the data of the first element.
+ *
+ * @param[in] list The list to use.
+ * @return First data element.
+ */
+m_com_sized_data_t* m_list_get_first(const m_list_t *const list);
+
+/**
+ * @brief Returns the data of the last element.
+ *
+ * @param[in] list The list to use.
+ * @return Last data element.
+ */
+m_com_sized_data_t* m_list_get_last(const m_list_t *const list);
+
+/**
  * @brief Returns the data of the nth node in the list.
  *
  * @param[in] list The list.
