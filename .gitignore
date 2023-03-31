@@ -40,3 +40,6 @@ Debug/
 
 # CTags
 tags
+
+# coverage folder
+coverage/
