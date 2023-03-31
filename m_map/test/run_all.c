@@ -133,7 +133,6 @@ int test_delete_not_copied()
 {
     m_map_t *map = m_map_create(10);
     m_com_sized_data_t data;
-    m_com_sized_data_t *result;
     bool is_success = true;
 
     int a[20];
@@ -316,7 +315,6 @@ int test_iterator_empty()
 {
     m_map_t *map = m_map_create(10);
     m_map_iterator_t *iterator = m_map_iterator_create(map);
-    m_com_sized_data_t data;
     m_com_sized_data_t *result;
     bool is_success = true;
 
