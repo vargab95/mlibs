@@ -18,7 +18,7 @@ using namespace std::chrono;
 
 const int test_count = 1000;
 
-TEST(m_list_speed_tests, faster_than_std_map)
+TEST(m_list_speed_tests, faster_than_std_list)
 {
     system_clock::time_point start, stop, sub_start, sub_stop;
     microseconds duration, mlib_duration, std_duration;
