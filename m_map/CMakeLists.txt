@@ -54,21 +54,29 @@ install(TARGETS m_map DESTINATION lib)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/api/m_map.h DESTINATION include/m_libs)
 
 if (BUILD_TEST)
-    add_executable(m_map_test
-                   ${CMAKE_CURRENT_SOURCE_DIR}/test/run_all.c)
-    target_link_libraries(m_map_test m_map)
+    enable_testing()
 
+    add_executable(m_map_unit_test
+                   ${CMAKE_CURRENT_SOURCE_DIR}/test/read_write.cpp
+                   ${CMAKE_CURRENT_SOURCE_DIR}/test/iterator.cpp
+                   ${CMAKE_CURRENT_SOURCE_DIR}/test/delete.cpp)
+
+    target_link_libraries(m_map_unit_test m_map GTest::gtest GTest::gtest_main)
     if (COMPOSITE_BUILD)
-        add_dependencies(m_map_test m_map)
+        add_dependencies(m_map_unit_test m_map)
     endif()
 
-    add_executable(m_map_speed_test ${CMAKE_CURRENT_SOURCE_DIR}/test/speed_test.cpp)
-    target_link_libraries(m_map_speed_test m_map)
+    include(GoogleTest)
+    gtest_discover_tests(m_map_unit_test)
 
+    add_executable(m_map_speed_test
+                   ${CMAKE_CURRENT_SOURCE_DIR}/test/speed.cpp)
+
+    target_link_libraries(m_map_speed_test m_map GTest::gtest GTest::gtest_main)
     if (COMPOSITE_BUILD)
         add_dependencies(m_map_speed_test m_map)
     endif()
 
-    add_test(NAME m_map_functional_test COMMAND ./m_map_test)
-    enable_testing()
+    include(GoogleTest)
+    gtest_discover_tests(m_map_speed_test)
 endif()
