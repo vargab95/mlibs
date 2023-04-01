@@ -12,7 +12,7 @@
 #endif
 
 static bool fill_arg_entry(m_args_entry_t *entry, int argc, char **argv);
-static void process_found_entry(m_args_entry_t *entry);
+static bool process_found_entry(m_args_entry_t *entry);
 static bool process_arg(m_args_entry_t *entry, int i, char **argv);
 static bool process_short_arg(m_args_entry_t *entry, int i, char **argv);
 static bool process_long_arg(m_args_entry_t *entry, int i, char **argv);
@@ -61,12 +61,15 @@ static bool fill_arg_entry(m_args_entry_t *entry, int argc, char **argv)
     {
         if (process_arg(entry, i, argv))
         {
-            process_found_entry(entry);
+            if (!process_found_entry(entry))
+            {
+                return FALSE;
+            }
             break;
         }
     }
 
-    return true;
+    return TRUE;
 }
 
 static bool process_arg(m_args_entry_t *entry, int i, char **argv)
@@ -128,21 +131,29 @@ static bool process_env_arg(m_args_entry_t *entry, int i, char **argv)
     return FALSE;
 }
 
-static void process_found_entry(m_args_entry_t *entry)
+static bool process_found_entry(m_args_entry_t *entry)
 {
     switch (entry->expected_type)
     {
     case ARG_TYPE_INT:
-        entry->value.int_val = atoi(entry->value.string_val);
+        if (sscanf(entry->value.string_val, "%d", &entry->value.int_val) != 1)
+        {
+            return FALSE;
+        }
         break;
     case ARG_TYPE_FLOAT:
-        entry->value.float_val = atof(entry->value.string_val);
+        if (sscanf(entry->value.string_val, "%d", &entry->value.float_val) != 1)
+        {
+            return FALSE;
+        }
         break;
     case ARG_TYPE_STRING:
         break;
     }
 
     entry->flags.present = 1;
+
+    return TRUE;
 }
 
 m_args_entry_t *m_args_get(m_args_t *args, uint32_t id)
