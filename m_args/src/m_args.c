@@ -142,7 +142,7 @@ static bool process_found_entry(m_args_entry_t *entry)
         }
         break;
     case ARG_TYPE_FLOAT:
-        if (sscanf(entry->value.string_val, "%d", &entry->value.float_val) != 1)
+        if (sscanf(entry->value.string_val, "%f", &entry->value.float_val) != 1)
         {
             return FALSE;
         }
