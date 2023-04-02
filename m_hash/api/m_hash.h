@@ -23,11 +23,19 @@
 extern uint32_t m_hash_djb(const m_com_sized_data_t *input);
 
 /**
+ * @brief D. J. Bernstein 2 hash function
+ *
+ * @param[in] input Input in the commonly used m_common format.
+ * @return uint32_t The 32 bit hash.
+ */
+extern uint32_t m_hash_djb2(const m_com_sized_data_t *input);
+
+/**
  * @brief FNV hash function, variant 1a
  *
  * @param[in] input Input in the commonly used m_common format.
  * @return uint32_t The 32 bit hash.
  */
-extern uint32_t m_hash_fnv1a(const m_com_sized_data_t *input);
+extern uint32_t m_hash_fnv1a32(const m_com_sized_data_t *input);
 
 #endif

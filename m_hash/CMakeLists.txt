@@ -51,7 +51,16 @@ install(TARGETS m_hash DESTINATION lib)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/api/m_hash.h DESTINATION include/m_libs)
 
 if (BUILD_TEST)
-  add_executable(m_hash_test
-                 ${CMAKE_CURRENT_SOURCE_DIR}/test/run_all.c)
-  target_link_libraries(m_hash_test m_hash)
+    enable_testing()
+
+    add_executable(m_hash_unit_test
+                   ${CMAKE_CURRENT_SOURCE_DIR}/test/test.cpp)
+
+    target_link_libraries(m_hash_unit_test m_hash GTest::gtest GTest::gtest_main)
+    if (COMPOSITE_BUILD)
+        add_dependencies(m_hash_unit_test m_hash)
+    endif()
+
+    include(GoogleTest)
+    gtest_discover_tests(m_hash_unit_test)
 endif()
