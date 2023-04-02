@@ -30,6 +30,13 @@ static void tear_down(m_list_t **list, m_list_iterator_t **iterator)
     m_list_destroy(list);
 }
 
+TEST(m_list_iterate_tests, destroy_referenced)
+{
+    m_list_t *list = m_list_create();
+    m_list_iterator_t *iterator = m_list_iterator_create(list);
+    m_list_destroy(&list);
+}
+
 TEST(m_list_iterate_tests, previous_null_at_head)
 {
     m_list_t *list;

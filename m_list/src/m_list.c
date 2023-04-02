@@ -87,6 +87,11 @@ m_com_sized_data_t *m_list_get_by_id(const m_list_t *const list, uint32_t id)
     for (size_t i = 0; i < list->size && i != id; i++, tmp = tmp->next)
         ;
 
+    if (!tmp)
+    {
+        return NULL;
+    }
+
     return &tmp->data;
 }
 
@@ -157,7 +162,7 @@ static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const 
 {
     struct m_list_node_t *tmp;
 
-    if (NULL == list->head)
+    if (NULL == list || NULL == list->head)
     {
         return;
     }

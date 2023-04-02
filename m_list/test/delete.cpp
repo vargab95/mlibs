@@ -30,6 +30,31 @@ static void tear_down(m_list_t **list, m_list_iterator_t **iterator)
     m_list_destroy(list);
 }
 
+TEST(m_list_delete_tests, delete_on_null)
+{
+    m_com_sized_data_t data;
+    int i = 3;
+
+    data.data = &i;
+    data.size = sizeof(i);
+
+    m_list_delete_by_value(NULL, &data);
+}
+
+TEST(m_list_delete_tests, delete_from_empty)
+{
+    m_list_t *list = m_list_create();
+    m_com_sized_data_t data;
+    int i = 3;
+
+    data.data = &i;
+    data.size = sizeof(i);
+
+    m_list_delete_by_value(list, &data);
+
+    m_list_destroy(&list);
+}
+
 TEST(m_list_delete_tests, delete_one)
 {
     m_list_t *list;
@@ -47,6 +72,46 @@ TEST(m_list_delete_tests, delete_one)
     m_list_iterator_next(iterator);
     result = m_list_iterator_next(iterator);
     EXPECT_EQ(*(int *)result->data, 4);
+
+    tear_down(&list, &iterator);
+}
+
+TEST(m_list_delete_tests, delete_first)
+{
+    m_list_t *list;
+    m_list_iterator_t *iterator = set_up(&list);
+    m_com_sized_data_t data;
+    m_com_sized_data_t *result;
+
+    int c = 0;
+    data.data = &c;
+    data.size = sizeof(c);
+
+    m_list_delete_by_value(list, &data);
+
+    m_list_iterator_go_to_head(iterator);
+    result = m_list_iterator_current(iterator);
+    EXPECT_EQ(*(int *)result->data, 1);
+
+    tear_down(&list, &iterator);
+}
+
+TEST(m_list_delete_tests, delete_last)
+{
+    m_list_t *list;
+    m_list_iterator_t *iterator = set_up(&list);
+    m_com_sized_data_t data;
+    m_com_sized_data_t *result;
+
+    int c = 9;
+    data.data = &c;
+    data.size = sizeof(c);
+
+    m_list_delete_by_value(list, &data);
+
+    m_list_iterator_go_to_tail(iterator);
+    result = m_list_iterator_current(iterator);
+    EXPECT_EQ(*(int *)result->data, 8);
 
     tear_down(&list, &iterator);
 }

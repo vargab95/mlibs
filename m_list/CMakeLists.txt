@@ -56,6 +56,7 @@ if (BUILD_TEST)
     enable_testing()
 
     add_executable(m_list_unit_test
+                   ${CMAKE_CURRENT_SOURCE_DIR}/test/get.cpp
                    ${CMAKE_CURRENT_SOURCE_DIR}/test/append.cpp
                    ${CMAKE_CURRENT_SOURCE_DIR}/test/iterator.cpp
                    ${CMAKE_CURRENT_SOURCE_DIR}/test/delete.cpp)
