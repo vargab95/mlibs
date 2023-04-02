@@ -2,6 +2,7 @@
 
 set -e
 
+source_folder=`pwd`
 script_dir=$(dirname $0)
 
 mkdir -p $script_dir/coverage
@@ -20,6 +21,14 @@ lcov \
     --capture \
     --output-file ./code_coverage.info \
     -rc lcov_branch_coverage=1
+
+for filename in $(find $source_folder -wholename "**/src/*.c")
+do
+    if ! grep "$filename" ./code_coverage.info > /dev/null
+    then
+        echo "WARNING: $filename is not covered"
+    fi
+done
 
 genhtml \
     code_coverage.info \
