@@ -30,6 +30,7 @@ typedef struct m_lrucache_callbacks_t
  * Creates a LRU cache
  *
  * @param[in] size_t Capacity of the LRU cache
+ * @param[in] m_lrucache_callbacks_t Callbacks for handling cache items
  * @return m_lrucache_t* New LRU cache instance
  */
 m_lrucache_t* m_lrucache_create(size_t capacity, const m_lrucache_callbacks_t * const callbacks);
