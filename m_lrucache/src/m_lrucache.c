@@ -56,7 +56,7 @@ static inline uint32_t get_table_index(m_lrucache_t *cache, const m_com_sized_da
 
 m_lrucache_t *m_lrucache_create(size_t capacity, const m_lrucache_callbacks_t * const callbacks)
 {
-    m_lrucache_t *cache = calloc(1, sizeof(m_lrucache_t) + capacity * sizeof(m_lrucache_item_t));
+    m_lrucache_t *cache = m_mem_calloc(1, sizeof(m_lrucache_t) + capacity * sizeof(m_lrucache_item_t));
 
     cache->capacity = capacity;
     cache->callbacks = callbacks;
@@ -107,7 +107,7 @@ bool m_lrucache_put(m_lrucache_t *const cache, const m_com_sized_data_t *const k
 
     if (!slot)
     {
-        slot = calloc(1, sizeof(m_lrucache_item_t));
+        slot = m_mem_calloc(1, sizeof(m_lrucache_item_t));
         if (!slot)
         {
             return false;
@@ -132,7 +132,7 @@ bool m_lrucache_put(m_lrucache_t *const cache, const m_com_sized_data_t *const k
         }
         else
         {
-            item = calloc(1, sizeof(m_lrucache_item_t));
+            item = m_mem_calloc(1, sizeof(m_lrucache_item_t));
             if (!item)
             {
                 abort();
