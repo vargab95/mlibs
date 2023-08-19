@@ -1,6 +1,8 @@
 #ifndef __TYPES_H__
 #define __TYPES_H__
 
+#include <stdint.h>
+
 #if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_common.h>
 #else
@@ -10,25 +12,25 @@
 /**
  * @brief Type definition for list elements
  */
-struct m_list_node_t
+typedef struct m_list_node_t
 {
     uint8_t copied : 2;
     uint8_t reserved : 5; /**< reserved for further flags */
     m_com_sized_data_t data;
     struct m_list_node_t *next;
     struct m_list_node_t *prev;
-};
+} m_list_node_t;
 
 /**
  * @brief Type definition for list data structure
  */
-struct m_list_t
+typedef struct m_list_t
 {
     size_t size;
     uint32_t reference_counter;
     m_list_node_t *head;
     m_list_node_t *tail;
-};
+} m_list_t;
 
 
 /**

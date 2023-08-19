@@ -3,7 +3,7 @@
 #!/bin/bash
 
 BUILD_DIRECTORY_NAME=build
-MODULES=(m_common m_hash m_mem m_str m_list m_map m_args)
+MODULES=(m_common m_hash m_mem m_str m_list m_map m_lrucache m_args)
 
 function print_help {
     echo "$0 <module|all|help> [--install]"

@@ -43,3 +43,7 @@ tags
 
 # coverage folder
 coverage/
+
+# clangd
+.cache/
+compile_commands.json

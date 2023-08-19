@@ -8,6 +8,8 @@ option(BUILD_TEST "Build tests" ON)
 set(COMPOSITE_BUILD YES)
 add_compile_definitions(COMPOSITE_BUILD=1)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
+
 if (BUILD_DOC)
     set(DOXYGEN_GENERATE_HTML YES)
     set(DOXYGEN_GENERATE_MAN YES)
@@ -62,4 +64,9 @@ endif()
 option(BUILD_M_MAP "Enable building m_map" ON)
 if(BUILD_M_MAP)
     add_subdirectory(m_map)
+endif()
+
+option(BUILD_M_LRUCACHE "Enable building m_lrucache" ON)
+if(BUILD_M_LRUCACHE)
+    add_subdirectory(m_lrucache)
 endif()
