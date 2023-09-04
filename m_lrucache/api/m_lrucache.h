@@ -22,7 +22,14 @@ typedef struct m_lrucache_t m_lrucache_t;
 /** @brief Type definition of LRU cache callbacks */
 typedef struct m_lrucache_callbacks_t 
 {
+    /** @brief Called when the cache implementation deletes an element
+     *         due to the capacity was reached or destroy was called.
+     *         It is a destructor function for the keys. */
     void (*destroy_key)(m_com_sized_data_t **);
+
+    /** @brief Called when the cache implementation deletes an element
+     *         due to the capacity was reached or destroy was called.
+     *         It is a destructor function for the values. */
     void (*destroy_value)(m_com_sized_data_t **);
 } m_lrucache_callbacks_t;
 
