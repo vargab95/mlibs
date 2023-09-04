@@ -74,7 +74,7 @@ static m_com_sized_data_t *malloc_impl(m_context_id_t context, size_t size)
 
     result = result_ptr;
     result->size = size;
-    result->data = result_ptr + sizeof(result->size);
+    result->data = result_ptr + sizeof(m_com_sized_data_t);
 
     _context->ptr = result_ptr;
 
@@ -106,6 +106,6 @@ static m_com_sized_data_t *realloc_impl(m_context_id_t context, m_com_sized_data
     return result;
 }
 
-static void free_impl(m_context_id_t id, m_com_sized_data_t *data)
+static void free_impl(m_context_id_t context, m_com_sized_data_t *data)
 {
 }

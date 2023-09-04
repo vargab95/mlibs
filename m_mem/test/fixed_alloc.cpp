@@ -39,3 +39,16 @@ TEST(m_fixed_allocator_tests, round_up_to_page_size)
     EXPECT_EQ(data->size, page_size / 2);
     m_fixed_allocator.destroy(context);
 }
+
+TEST(m_fixed_allocator_tests, write_to_end)
+{
+    const size_t page_size = getpagesize();
+    m_context_id_t context = m_fixed_allocator.create({ .fixed = { .minimum_size = page_size } });
+
+    m_com_sized_data_t *data = m_fixed_allocator.malloc(context, sizeof(int));
+    *(int*)data->data = 0xFEDCBA98;
+
+    EXPECT_EQ(*(int*)data->data, 0xFEDCBA98);
+    EXPECT_EQ(data->size, sizeof(int));
+    m_fixed_allocator.destroy(context);
+}

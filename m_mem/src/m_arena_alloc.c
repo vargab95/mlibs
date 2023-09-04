@@ -58,8 +58,8 @@ static m_context_id_t create_context(m_allocator_config_t config)
         return NULL;
     }
 
-    context->arenas.buffer = context + sizeof(arena_allocator_context);
-    context->arenas.ptr = context + allocation_size;
+    context->arenas.buffer = (void*)context + sizeof(arena_allocator_context);
+    context->arenas.ptr = (void*)context + allocation_size;
     context->arenas.next = NULL;
     context->arena_in_use = &context->arenas;
     context->allocation_size = allocation_size;
@@ -132,7 +132,7 @@ static m_com_sized_data_t *malloc_impl(m_context_id_t context, size_t size)
 
     result = result_ptr;
     result->size = size;
-    result->data = result_ptr + sizeof(result->size);
+    result->data = result_ptr + sizeof(m_com_sized_data_t);
 
     _context->arena_in_use->ptr = result_ptr;
 
