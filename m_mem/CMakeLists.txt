@@ -31,7 +31,11 @@ endif()
 
 add_library(m_mem SHARED
             ${CMAKE_CURRENT_SOURCE_DIR}/src/m_mem.c
-            ${CMAKE_CURRENT_SOURCE_DIR}/api/m_mem.h)
+            ${CMAKE_CURRENT_SOURCE_DIR}/api/m_mem.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/m_fixed_alloc.c
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/m_arena_alloc.c
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/m_slab_alloc.c
+            ${CMAKE_CURRENT_SOURCE_DIR}/api/m_alloc.h)
 target_include_directories(m_mem
                            PUBLIC
                                $<INSTALL_INTERFACE:api>
@@ -51,7 +55,17 @@ install(TARGETS m_mem DESTINATION lib)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/api/m_mem.h DESTINATION include/m_libs)
 
 if (BUILD_TEST)
-  #add_executable(m_mem_test
-  #               ${CMAKE_CURRENT_SOURCE_DIR}/test/run_all.c)
-  #target_link_libraries(m_mem_test m_mem)
+    enable_testing()
+
+    add_executable(m_mem_unit_test
+                   ${CMAKE_CURRENT_SOURCE_DIR}/test/fixed_alloc.cpp
+                   ${CMAKE_CURRENT_SOURCE_DIR}/test/arena_alloc.cpp)
+
+    target_link_libraries(m_mem_unit_test m_mem GTest::gtest GTest::gtest_main)
+    if (COMPOSITE_BUILD)
+        add_dependencies(m_mem_unit_test m_mem)
+    endif()
+
+    include(GoogleTest)
+    gtest_discover_tests(m_mem_unit_test)
 endif()
