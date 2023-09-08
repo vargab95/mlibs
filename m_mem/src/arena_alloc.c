@@ -104,6 +104,7 @@ static m_com_sized_data_t *malloc_impl(m_context_id_t context, size_t size)
         new_arena->buffer = new_arena + sizeof(struct arena);
         new_arena->ptr = new_arena->buffer;
         new_arena->next = _context->arenas.next;
+        _context->arenas.next = new_arena;
 
         m_com_sized_data_t *result = new_arena->buffer;
         result->size = _context->allocation_size - sizeof(struct arena) - sizeof(m_com_sized_data_t);
@@ -124,8 +125,9 @@ static m_com_sized_data_t *malloc_impl(m_context_id_t context, size_t size)
         }
 
         new_arena->buffer = new_arena + sizeof(struct arena);
-        new_arena->ptr = new_arena + _context->allocation_size;
+        new_arena->ptr = (void*)new_arena + _context->allocation_size;
         new_arena->next = _context->arenas.next;
+        _context->arenas.next = new_arena;
         _context->arena_in_use = new_arena;
         result_ptr = _context->arena_in_use->ptr - size - sizeof(m_com_sized_data_t);
     }

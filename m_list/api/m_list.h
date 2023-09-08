@@ -11,6 +11,13 @@
 #include "../../m_common/api/m_common.h"
 #endif
 
+
+#if !defined(COMPOSITE_BUILD)
+#include <m_libs/m_alloc.h>
+#else
+#include "../../m_mem/api/m_alloc.h"
+#endif
+
 /** @file m_list.h
  * m_list public definitions.
  */
@@ -27,7 +34,7 @@ typedef struct m_list_iterator_t m_list_iterator_t;
 /**
  * @brief Create a new list.
  */
-m_list_t *m_list_create();
+m_list_t *m_list_create(m_allocator_t *allocator, m_context_id_t context);
 
 /**
  * @brief Destroys a list.
@@ -74,7 +81,7 @@ m_com_sized_data_t *m_list_get_by_id(const m_list_t *const list, uint32_t id);
  * @param[in] list List.
  * @param[in] value Value to be appended.
  */
-void m_list_append_to_end_set(m_list_t *list, const m_com_sized_data_t *const value);
+boolean m_list_append_to_end_set(m_list_t *list, const m_com_sized_data_t *const value);
 
 /**
  * @brief Adds the element with a shallow copy to the beginning of the list.
@@ -82,7 +89,7 @@ void m_list_append_to_end_set(m_list_t *list, const m_com_sized_data_t *const va
  * @param[in] list List.
  * @param[in] value Value to be appended.
  */
-void m_list_append_to_beginning_set(m_list_t *list, const m_com_sized_data_t *const value);
+boolean m_list_append_to_beginning_set(m_list_t *list, const m_com_sized_data_t *const value);
 
 /**
  * @brief Adds the element with a deep copy to the end of the list.
@@ -90,7 +97,7 @@ void m_list_append_to_beginning_set(m_list_t *list, const m_com_sized_data_t *co
  * @param[in] list List.
  * @param[in] value Value to be appended.
  */
-void m_list_append_to_end_store(m_list_t *list, const m_com_sized_data_t *const value);
+boolean m_list_append_to_end_store(m_list_t *list, const m_com_sized_data_t *const value);
 
 /**
  * @brief Adds the element with a deep copy to the beginning of the list.
@@ -98,7 +105,7 @@ void m_list_append_to_end_store(m_list_t *list, const m_com_sized_data_t *const 
  * @param[in] list List.
  * @param[in] value Value to be appended.
  */
-void m_list_append_to_beginning_store(m_list_t *list, const m_com_sized_data_t *const value);
+boolean m_list_append_to_beginning_store(m_list_t *list, const m_com_sized_data_t *const value);
 
 /**
  * @brief Deletes an object by value.

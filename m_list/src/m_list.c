@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "m_list.h"
 #include "types.h"
@@ -11,17 +12,23 @@
 #endif
 
 static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const value, boolean multi);
-static void append_to_end_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy);
-static void append_to_beginning_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy);
-static void conditional_copy(const m_com_sized_data_t *const src, m_com_sized_data_t *dst, boolean copy);
-static void delete_node(m_list_node_t **node);
+static boolean append_to_end_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy);
+static boolean append_to_beginning_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy);
+static boolean conditional_copy(m_list_t *list, const m_com_sized_data_t *const src, m_com_sized_data_t *dst, boolean copy);
+static void delete_node(m_list_t *list, m_list_node_t **node);
 
-m_list_t *m_list_create()
+m_list_t *m_list_create(m_allocator_t *allocator, m_context_id_t context)
 {
     m_list_t *list;
 
-    list = (m_list_t *)m_mem_malloc(sizeof(m_list_t));
+    list = (m_list_t *)allocator->malloc(context, (sizeof(m_list_t)));
+    if (list == NULL)
+    {
+        return NULL;
+    }
 
+    list->context = context;
+    list->allocator = allocator;
     list->size = 0;
     list->reference_counter = 0;
     list->head = NULL;
@@ -37,7 +44,7 @@ void m_list_destroy(m_list_t **list)
     tmp = (*list)->head;
     while (tmp != NULL)
     {
-        delete_node(&tmp);
+        delete_node(*list, &tmp);
     }
 
     if ((*list)->reference_counter)
@@ -46,7 +53,7 @@ void m_list_destroy(m_list_t **list)
         printf("List: %p, reference counter: %d\n", *list, (*list)->reference_counter);
     }
 
-    free(*list);
+    (*list)->allocator->free((*list)->context, (void*)*list);
     *list = NULL;
 }
 
@@ -95,24 +102,24 @@ m_com_sized_data_t *m_list_get_by_id(const m_list_t *const list, uint32_t id)
     return &tmp->data;
 }
 
-void m_list_append_to_end_set(m_list_t *list, const m_com_sized_data_t *const value)
+boolean m_list_append_to_end_set(m_list_t *list, const m_com_sized_data_t *const value)
 {
-    append_to_end_any(list, value, FALSE);
+    return append_to_end_any(list, value, FALSE);
 }
 
-void m_list_append_to_beginning_set(m_list_t *list, const m_com_sized_data_t *const value)
+boolean m_list_append_to_beginning_set(m_list_t *list, const m_com_sized_data_t *const value)
 {
-    append_to_beginning_any(list, value, FALSE);
+    return append_to_beginning_any(list, value, FALSE);
 }
 
-void m_list_append_to_end_store(m_list_t *list, const m_com_sized_data_t *const value)
+boolean m_list_append_to_end_store(m_list_t *list, const m_com_sized_data_t *const value)
 {
-    append_to_end_any(list, value, TRUE);
+    return append_to_end_any(list, value, TRUE);
 }
 
-void m_list_append_to_beginning_store(m_list_t *list, const m_com_sized_data_t *const value)
+boolean m_list_append_to_beginning_store(m_list_t *list, const m_com_sized_data_t *const value)
 {
-    append_to_beginning_any(list, value, TRUE);
+    return append_to_beginning_any(list, value, TRUE);
 }
 
 void m_list_delete_by_value(m_list_t *list, const m_com_sized_data_t *const value)
@@ -190,7 +197,7 @@ static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const 
                 list->tail = tmp->prev;
             }
 
-            delete_node(&tmp);
+            delete_node(list, &tmp);
             --list->size;
 
             if (TRUE != multi)
@@ -205,13 +212,22 @@ static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const 
     }
 }
 
-static void append_to_end_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy)
+static boolean append_to_end_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy)
 {
     struct m_list_node_t *tmp;
 
-    tmp = (struct m_list_node_t *)m_mem_malloc(sizeof(struct m_list_node_t));
+    tmp = (struct m_list_node_t *)list->allocator->malloc(list->context, sizeof(struct m_list_node_t));
+    if (tmp == NULL)
+    {
+        return false;
+    }
 
-    conditional_copy(value, &tmp->data, copy);
+    if (!conditional_copy(list, value, &tmp->data, copy))
+    {
+        list->allocator->free(list->context, (void*)tmp);
+        return false;
+    }
+
     tmp->copied = (copy) ? STORED : SET;
     tmp->next = NULL;
     tmp->prev = list->tail;
@@ -228,15 +244,25 @@ static void append_to_end_any(m_list_t *list, const m_com_sized_data_t *const va
     }
 
     list->size++;
+
+    return true;
 }
 
-static void append_to_beginning_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy)
+static boolean append_to_beginning_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy)
 {
     struct m_list_node_t *tmp;
 
-    tmp = (struct m_list_node_t *)m_mem_malloc(sizeof(struct m_list_node_t));
+    tmp = (struct m_list_node_t *)list->allocator->malloc(list->context, sizeof(struct m_list_node_t));
+    if (tmp == NULL)
+    {
+        return false;
+    }
 
-    conditional_copy(value, &tmp->data, copy);
+    if (!conditional_copy(list, value, &tmp->data, copy))
+    {
+        list->allocator->free(list->context, (void*)tmp);
+        return false;
+    }
     tmp->next = list->head;
     tmp->prev = NULL;
 
@@ -252,13 +278,19 @@ static void append_to_beginning_any(m_list_t *list, const m_com_sized_data_t *co
     }
 
     list->size++;
+
+    return true;
 }
 
-static void conditional_copy(const m_com_sized_data_t *const src, m_com_sized_data_t *dst, boolean copy)
+static boolean conditional_copy(m_list_t *list, const m_com_sized_data_t *const src, m_com_sized_data_t *dst, boolean copy)
 {
     if (copy)
     {
-        dst->data = m_mem_malloc(src->size);
+        dst->data = list->allocator->malloc(list->context, src->size);
+        if (dst->data == NULL)
+        {
+            return false;
+        }
         dst->size = src->size;
         m_mem_copy(src, dst);
     }
@@ -266,6 +298,8 @@ static void conditional_copy(const m_com_sized_data_t *const src, m_com_sized_da
     {
         *dst = *src;
     }
+
+    return true;
 }
 
 void m_list_dump_binary(const m_list_t *const list, FILE *fp)
@@ -293,7 +327,18 @@ void m_list_custom_dump_binary(const m_list_t *const list,
 
 m_list_t *m_list_load_binary(FILE *fp)
 {
-    m_list_t *list = m_list_create();
+    int pagesize = getpagesize();
+    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        .arena = {
+            .minimum_size_per_arena = pagesize
+        }
+    });
+    if (!context)
+    {
+        return NULL;
+    }
+
+    m_list_t *list = m_list_create(&m_arena_allocator, context);
     size_t data_size;
     long end_of_file, current_position;
 
@@ -312,29 +357,34 @@ m_list_t *m_list_load_binary(FILE *fp)
             break;
         }
 
-        data = m_mem_sized_malloc(data_size);
+        data = list->allocator->malloc(list->context, data_size);
         if (fread(data->data, sizeof(uint8_t), data->size, fp) != data->size)
         {
             m_list_destroy(&list);
             break;
         }
 
-        append_to_end_any(list, data, FALSE);
+        if (!append_to_end_any(list, data, FALSE))
+        {
+            break;
+        }
     }
+
+    m_arena_allocator.destroy(context);
 
     return list;
 }
 
-static void delete_node(m_list_node_t **node)
+static void delete_node(m_list_t *list, m_list_node_t **node)
 {
     m_list_node_t *to_delete;
 
     if ((*node)->copied == STORED)
     {
-        free((*node)->data.data);
+        list->allocator->free(list->context, (*node)->data.data);
     }
 
     to_delete = (*node);
     (*node) = (*node)->next;
-    free(to_delete);
+    list->allocator->free(list->context, (void*)to_delete);
 }

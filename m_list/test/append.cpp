@@ -1,4 +1,6 @@
+#include "m_alloc.h"
 #include "gtest/gtest.h"
+#include <unistd.h>
 
 extern "C"
 {
@@ -7,7 +9,13 @@ extern "C"
 
 TEST(m_list_append_tests, append_to_beginning_set)
 {
-    m_list_t *list = m_list_create();
+    const size_t pagesize = getpagesize();
+    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        .arena = {
+            .minimum_size_per_arena = pagesize
+        }
+    });
+    m_list_t *list = m_list_create(&m_arena_allocator, context);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
 
@@ -31,11 +39,18 @@ TEST(m_list_append_tests, append_to_beginning_set)
     }
 
     m_list_destroy(&list);
+    m_arena_allocator.destroy(context);
 }
 
 TEST(m_list_append_tests, append_to_end_set)
 {
-    m_list_t *list = m_list_create();
+    const size_t pagesize = getpagesize();
+    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        .arena = {
+            .minimum_size_per_arena = pagesize
+        }
+    });
+    m_list_t *list = m_list_create(&m_arena_allocator, context);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
 
@@ -59,11 +74,18 @@ TEST(m_list_append_tests, append_to_end_set)
     }
 
     m_list_destroy(&list);
+    m_arena_allocator.destroy(context);
 }
 
 TEST(m_list_append_tests, append_to_beginning_store)
 {
-    m_list_t *list = m_list_create();
+    const size_t pagesize = getpagesize();
+    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        .arena = {
+            .minimum_size_per_arena = pagesize
+        }
+    });
+    m_list_t *list = m_list_create(&m_arena_allocator, context);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
 
@@ -87,11 +109,18 @@ TEST(m_list_append_tests, append_to_beginning_store)
     }
 
     m_list_destroy(&list);
+    m_arena_allocator.destroy(context);
 }
 
 TEST(m_list_append_tests, append_to_end_store)
 {
-    m_list_t *list = m_list_create();
+    const size_t pagesize = getpagesize();
+    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        .arena = {
+            .minimum_size_per_arena = pagesize
+        }
+    });
+    m_list_t *list = m_list_create(&m_arena_allocator, context);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
 
@@ -115,4 +144,5 @@ TEST(m_list_append_tests, append_to_end_store)
     }
 
     m_list_destroy(&list);
+    m_arena_allocator.destroy(context);
 }

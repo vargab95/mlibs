@@ -16,7 +16,7 @@ extern "C"
 using namespace std;
 using namespace std::chrono;
 
-const int test_count = 1000;
+const int test_count = 10000;
 
 TEST(m_list_speed_tests, faster_than_std_list)
 {
@@ -48,7 +48,13 @@ TEST(m_list_speed_tests, faster_than_std_list)
 
     start = high_resolution_clock::now();
     {
-        m_list_t *mlib_list = m_list_create();
+        const size_t pagesize = getpagesize();
+        m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+            .arena = {
+                .minimum_size_per_arena = pagesize * 4
+            }
+        });
+        m_list_t *mlib_list = m_list_create(&m_arena_allocator, context);
         m_com_sized_data_t value;
         m_com_sized_data_t *result;
         int i;
@@ -74,9 +80,12 @@ TEST(m_list_speed_tests, faster_than_std_list)
         duration = duration_cast<microseconds>(sub_stop - sub_start);
 
         m_list_destroy(&mlib_list);
+        m_arena_allocator.destroy(context);
     }
     stop = high_resolution_clock::now();
     mlib_duration = duration = duration_cast<microseconds>(stop - start);
 
+    cout << "STD: " << std_duration.count() << " MLIB: " << mlib_duration.count()
+         << " (" << std_duration * 100.0 / mlib_duration << " %)" << endl;
     EXPECT_GT(std_duration * 100.0 / mlib_duration, 100);
 }

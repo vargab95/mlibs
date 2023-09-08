@@ -9,6 +9,13 @@
 #include "../../m_common/api/m_common.h"
 #endif
 
+
+#if !defined(COMPOSITE_BUILD)
+#include <m_libs/m_alloc.h>
+#else
+#include "../../m_mem/api/m_alloc.h"
+#endif
+
 /**
  * @brief Type definition for list elements
  */
@@ -28,6 +35,9 @@ typedef struct m_list_t
 {
     size_t size;
     uint32_t reference_counter;
+    m_allocator_t *allocator;
+    m_context_id_t context;
+
     m_list_node_t *head;
     m_list_node_t *tail;
 } m_list_t;

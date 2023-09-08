@@ -94,7 +94,7 @@ m_com_sized_data_t *m_map_read(const m_map_t *const map, const m_com_sized_data_
  * @param[in] key The key.
  * @param[in] value The value to be stored.
  */
-void m_map_store(const m_map_t *const map, const m_com_sized_data_t *const key, const m_com_sized_data_t *const value);
+boolean m_map_store(const m_map_t *const map, const m_com_sized_data_t *const key, const m_com_sized_data_t *const value);
 
 /**
  * @brief Deletes an object.

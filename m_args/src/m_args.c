@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "config.h"
 #include "m_args.h"
@@ -20,9 +21,15 @@ static bool process_env_arg(m_args_entry_t *entry, int i, char **argv);
 
 m_args_t *m_args_create(const char *description)
 {
-    m_args_t *args = (m_args_t *)m_mem_malloc(sizeof(m_args_t));
+    int pagesize = getpagesize();
+    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        .arena = {
+            .minimum_size_per_arena = pagesize
+        }
+    });
+    m_args_t *args = (m_args_t *)m_arena_allocator.malloc(context, sizeof(m_args_t));
 
-    args->arg_list = m_list_create();
+    args->arg_list = m_list_create(&m_arena_allocator, context);
     args->description = (char *)description;
 
     return args;

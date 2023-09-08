@@ -24,9 +24,19 @@ m_map_t *m_map_create(m_allocator_t *allocator, m_context_id_t context, const ui
     m_map_t *map;
 
     map = (m_map_t *)m_mem_malloc(sizeof(m_map_t));
+    if (map == NULL)
+    {
+        return NULL;
+    }
 
     map->size = size;
     map->table = (m_map_element_t *)allocator->calloc(context, map->size, sizeof(m_map_element_t));
+    if (map->table == NULL)
+    {
+        allocator->free(context, (void*)map);
+        return NULL;
+    }
+
     map->reference_count = 0;
     map->allocator = allocator;
     map->context = context;
@@ -86,19 +96,30 @@ m_com_sized_data_t *m_map_read(const m_map_t *const map, const m_com_sized_data_
     return value;
 }
 
-void m_map_store(const m_map_t *const map, const m_com_sized_data_t *const key, const m_com_sized_data_t *const value)
+boolean m_map_store(const m_map_t *const map, const m_com_sized_data_t *const key, const m_com_sized_data_t *const value)
 {
     m_map_element_t *element = get_or_create(map, key);
     element->copied = STORED;
 
-    element->data.data = map->allocator->malloc(map->context, value->size);
     element->data.size = value->size;
+    element->data.data = map->allocator->malloc(map->context, value->size);
+    if (element->data.data == NULL)
+    {
+        return false;
+    }
 
-    element->key.data = map->allocator->malloc(map->context, key->size);
     element->key.size = key->size;
+    element->key.data = map->allocator->malloc(map->context, key->size);
+    if (element->key.data == NULL)
+    {
+        map->allocator->free(map->context, element->data.data);
+        return false;
+    }
 
     m_mem_copy(key, &element->key);
     m_mem_copy(value, &element->data);
+
+    return true;
 }
 
 void m_map_delete(const m_map_t *const map, const m_com_sized_data_t *const key)
@@ -199,6 +220,10 @@ static m_map_element_t *find_sub_element(const m_map_element_t *const root, cons
 static m_map_element_t *create_element(const m_map_t * const map, m_map_element_t *const root, const m_com_sized_data_t *const key)
 {
     m_map_element_t *new_element = (m_map_element_t *)map->allocator->malloc(map->context, sizeof(m_map_element_t));
+    if (new_element == NULL)
+    {
+        return NULL;
+    }
 
     new_element->copied = NOT_USED;
     new_element->is_data_node = 1;

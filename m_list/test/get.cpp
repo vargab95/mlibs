@@ -7,7 +7,13 @@ extern "C"
 
 TEST(m_list_get_tests, get_size)
 {
-    m_list_t *list = m_list_create();
+    const size_t pagesize = getpagesize();
+    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        .arena = {
+            .minimum_size_per_arena = pagesize
+        }
+    });
+    m_list_t *list = m_list_create(&m_arena_allocator, context);
     m_com_sized_data_t data;
     int i = 12;
 
@@ -18,6 +24,8 @@ TEST(m_list_get_tests, get_size)
     m_list_append_to_beginning_set(list, &data);
 
     EXPECT_EQ(m_list_get_size(list), 2);
+
+    m_arena_allocator.destroy(context);
 }
 
 TEST(m_list_get_tests, get_size_of_null)
@@ -27,7 +35,13 @@ TEST(m_list_get_tests, get_size_of_null)
 
 TEST(m_list_get_tests, get_by_id_out_of_bounds)
 {
-    m_list_t *list = m_list_create();
+    const size_t pagesize = getpagesize();
+    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        .arena = {
+            .minimum_size_per_arena = pagesize
+        }
+    });
+    m_list_t *list = m_list_create(&m_arena_allocator, context);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
     int i;
@@ -44,11 +58,18 @@ TEST(m_list_get_tests, get_by_id_out_of_bounds)
     EXPECT_EQ(m_list_get_by_id(list, 2), (m_com_sized_data_t*)NULL);
 
     m_list_destroy(&list);
+    m_arena_allocator.destroy(context);
 }
 
 TEST(m_list_get_tests, get_first)
 {
-    m_list_t *list = m_list_create();
+    const size_t pagesize = getpagesize();
+    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        .arena = {
+            .minimum_size_per_arena = pagesize
+        }
+    });
+    m_list_t *list = m_list_create(&m_arena_allocator, context);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
     int i;
@@ -68,6 +89,7 @@ TEST(m_list_get_tests, get_first)
     EXPECT_EQ(result->size, sizeof(i));
 
     m_list_destroy(&list);
+    m_arena_allocator.destroy(context);
 }
 
 TEST(m_list_get_tests, get_first_null)
@@ -77,16 +99,29 @@ TEST(m_list_get_tests, get_first_null)
 
 TEST(m_list_get_tests, get_first_empty)
 {
-    m_list_t *list = m_list_create();
+    const size_t pagesize = getpagesize();
+    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        .arena = {
+            .minimum_size_per_arena = pagesize
+        }
+    });
+    m_list_t *list = m_list_create(&m_arena_allocator, context);
 
     EXPECT_EQ(m_list_get_first(list), (m_com_sized_data_t*)NULL);
 
     m_list_destroy(&list);
+    m_arena_allocator.destroy(context);
 }
 
 TEST(m_list_get_tests, get_last)
 {
-    m_list_t *list = m_list_create();
+    const size_t pagesize = getpagesize();
+    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        .arena = {
+            .minimum_size_per_arena = pagesize
+        }
+    });
+    m_list_t *list = m_list_create(&m_arena_allocator, context);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
     int i;
@@ -106,6 +141,7 @@ TEST(m_list_get_tests, get_last)
     EXPECT_EQ(result->size, sizeof(i));
 
     m_list_destroy(&list);
+    m_arena_allocator.destroy(context);
 }
 
 TEST(m_list_get_tests, get_last_null)
@@ -115,9 +151,16 @@ TEST(m_list_get_tests, get_last_null)
 
 TEST(m_list_get_tests, get_last_empty)
 {
-    m_list_t *list = m_list_create();
+    const size_t pagesize = getpagesize();
+    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        .arena = {
+            .minimum_size_per_arena = pagesize
+        }
+    });
+    m_list_t *list = m_list_create(&m_arena_allocator, context);
 
     EXPECT_EQ(m_list_get_last(list), (m_com_sized_data_t*)NULL);
 
     m_list_destroy(&list);
+    m_arena_allocator.destroy(context);
 }
