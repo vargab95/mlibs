@@ -32,10 +32,11 @@ endif()
 add_library(m_mem SHARED
             ${CMAKE_CURRENT_SOURCE_DIR}/src/m_mem.c
             ${CMAKE_CURRENT_SOURCE_DIR}/api/m_mem.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/m_fixed_alloc.c
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/m_arena_alloc.c
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/m_slab_alloc.c
-            ${CMAKE_CURRENT_SOURCE_DIR}/api/m_alloc.h)
+            ${CMAKE_CURRENT_SOURCE_DIR}/api/m_alloc.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/system_alloc.c
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/fixed_alloc.c
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/arena_alloc.c
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/slab_alloc.c)
 target_include_directories(m_mem
                            PUBLIC
                                $<INSTALL_INTERFACE:api>

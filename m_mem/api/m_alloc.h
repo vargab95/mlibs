@@ -40,6 +40,7 @@ typedef struct {
     void (*free)(m_context_id_t id, m_com_sized_data_t *data);
 } m_allocator_t;
 
+extern m_allocator_t m_system_allocator;
 extern m_allocator_t m_fixed_allocator;
 extern m_allocator_t m_arena_allocator;
 extern m_allocator_t m_slab_allocator;
