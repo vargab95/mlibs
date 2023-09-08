@@ -7,7 +7,8 @@ extern "C"
 
 TEST(m_map_rw_tests, get_set)
 {
-    m_map_t *map = m_map_create(100);
+    m_context_id_t context = m_system_allocator.create((m_allocator_config_t){});
+    m_map_t *map = m_map_create(&m_system_allocator, context, 100);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
 
@@ -35,7 +36,8 @@ TEST(m_map_rw_tests, get_set)
 
 TEST(m_map_rw_tests, read_store)
 {
-    m_map_t *map = m_map_create(100);
+    m_context_id_t context = m_system_allocator.create((m_allocator_config_t){});
+    m_map_t *map = m_map_create(&m_system_allocator, context, 100);
     m_com_sized_data_t data;
     m_com_sized_data_t result;
     result.data = malloc(4);
@@ -66,7 +68,8 @@ TEST(m_map_rw_tests, read_store)
 
 TEST(m_map_rw_tests, get_store)
 {
-    m_map_t *map = m_map_create(100);
+    m_context_id_t context = m_system_allocator.create((m_allocator_config_t){});
+    m_map_t *map = m_map_create(&m_system_allocator, context, 100);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
 
@@ -95,7 +98,8 @@ TEST(m_map_rw_tests, get_store)
 
 TEST(m_map_rw_tests, read_set)
 {
-    m_map_t *map = m_map_create(100);
+    m_context_id_t context = m_system_allocator.create((m_allocator_config_t){});
+    m_map_t *map = m_map_create(&m_system_allocator, context, 100);
     m_com_sized_data_t data;
     m_com_sized_data_t result;
     result.data = malloc(4);

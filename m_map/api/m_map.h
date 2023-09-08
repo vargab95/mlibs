@@ -10,6 +10,13 @@
 #include "../../m_common/api/m_common.h"
 #endif
 
+
+#if !defined(COMPOSITE_BUILD)
+#include <m_libs/m_alloc.h>
+#else
+#include "../../m_mem/api/m_alloc.h"
+#endif
+
 /** @file m_map.h
  * m_map public definitions.
  */
@@ -29,7 +36,7 @@ typedef struct m_map_iterator_t m_map_iterator_t;
  * @param[in] size
  * @return m_map_t*
  */
-m_map_t *m_map_create(const uint32_t size);
+m_map_t *m_map_create(m_allocator_t *allocator, m_context_id_t context, const uint32_t size);
 
 /**
  * @brief Destroys a map created by m_map_create.

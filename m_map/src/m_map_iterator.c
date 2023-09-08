@@ -11,7 +11,7 @@ static void find_and_set_next_table_root(m_map_iterator_t *iterator);
 
 m_map_iterator_t *m_map_iterator_create(m_map_t *map)
 {
-    m_map_iterator_t *iterator = (m_map_iterator_t *)m_mem_malloc(sizeof(m_map_iterator_t));
+    m_map_iterator_t *iterator = (m_map_iterator_t *)map->allocator->malloc(map->context, sizeof(m_map_iterator_t));
 
     iterator->map = map;
     map->reference_count++;

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <unistd.h>
 
 extern "C"
 {
@@ -49,7 +50,13 @@ int main(void)
 
     start = high_resolution_clock::now();
     {
-        m_map_t *mlib_map = m_map_create(10000);
+        const size_t pagesize = getpagesize();
+        m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+            .arena = {
+                .minimum_size_per_arena = pagesize
+            }
+        });
+        m_map_t *mlib_map = m_map_create(&m_system_allocator, context, 10000);
         m_com_sized_data_t key, value;
         m_com_sized_data_t *result;
         int i;
@@ -80,6 +87,7 @@ int main(void)
         cout << "mlib read ms: " << duration.count() << endl;
 
         m_map_destroy(&mlib_map);
+        m_fixed_allocator.destroy(context);
     }
     stop = high_resolution_clock::now();
     mlib_duration = duration = duration_cast<microseconds>(stop - start);

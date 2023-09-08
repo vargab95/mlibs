@@ -1,6 +1,9 @@
 #ifndef __TYPES_H__
 #define __TYPES_H__
 
+#include <stdint.h>
+#include "m_map.h"
+
 /**
  * @brief Type definition for map elements
  */
@@ -21,8 +24,11 @@ struct m_map_element_t
 struct m_map_t
 {
     uint32_t size;
-    m_map_element_t *table;
     uint32_t reference_count;
+    m_allocator_t *allocator;
+    m_context_id_t context;
+
+    m_map_element_t *table;
 };
 
 struct m_map_iterator_t

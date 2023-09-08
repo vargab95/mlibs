@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "config.h"
+#include "m_alloc.h"
 #include "m_map.h"
 #include "types.h"
 
@@ -15,18 +16,20 @@
 
 static m_map_element_t *get_root_element(const m_map_t *const map, const m_com_sized_data_t *const key);
 static m_map_element_t *find_sub_element(const m_map_element_t *const root, const m_com_sized_data_t *const key);
-static m_map_element_t *create_element(m_map_element_t *const root, const m_com_sized_data_t *const key);
+static m_map_element_t *create_element(const m_map_t *const map, m_map_element_t *const root, const m_com_sized_data_t *const key);
 static m_map_element_t *get_or_create(const m_map_t *const map, const m_com_sized_data_t *const key);
 
-m_map_t *m_map_create(const uint32_t size)
+m_map_t *m_map_create(m_allocator_t *allocator, m_context_id_t context, const uint32_t size)
 {
     m_map_t *map;
 
     map = (m_map_t *)m_mem_malloc(sizeof(m_map_t));
 
     map->size = size;
-    map->table = (m_map_element_t *)m_mem_calloc(map->size, sizeof(m_map_element_t));
+    map->table = (m_map_element_t *)allocator->calloc(context, map->size, sizeof(m_map_element_t));
     map->reference_count = 0;
+    map->allocator = allocator;
+    map->context = context;
 
     return map;
 }
@@ -88,10 +91,10 @@ void m_map_store(const m_map_t *const map, const m_com_sized_data_t *const key, 
     m_map_element_t *element = get_or_create(map, key);
     element->copied = STORED;
 
-    element->data.data = m_mem_malloc(value->size);
+    element->data.data = map->allocator->malloc(map->context, value->size);
     element->data.size = value->size;
 
-    element->key.data = m_mem_malloc(key->size);
+    element->key.data = map->allocator->malloc(map->context, key->size);
     element->key.size = key->size;
 
     m_mem_copy(key, &element->key);
@@ -193,9 +196,9 @@ static m_map_element_t *find_sub_element(const m_map_element_t *const root, cons
     return element;
 }
 
-static m_map_element_t *create_element(m_map_element_t *const root, const m_com_sized_data_t *const key)
+static m_map_element_t *create_element(const m_map_t * const map, m_map_element_t *const root, const m_com_sized_data_t *const key)
 {
-    m_map_element_t *new_element = (m_map_element_t *)m_mem_malloc(sizeof(m_map_element_t));
+    m_map_element_t *new_element = (m_map_element_t *)map->allocator->malloc(map->context, sizeof(m_map_element_t));
 
     new_element->copied = NOT_USED;
     new_element->is_data_node = 1;
@@ -218,7 +221,7 @@ static m_map_element_t *get_or_create(const m_map_t *const map, const m_com_size
 
     if (!element)
     {
-        element = create_element(root, key);
+        element = create_element(map, root, key);
     }
 
     return element;
