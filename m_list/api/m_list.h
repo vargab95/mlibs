@@ -33,6 +33,10 @@ typedef struct m_list_iterator_t m_list_iterator_t;
 
 /**
  * @brief Create a new list.
+ *
+ * @param[in] allocator
+ * @param[in] context
+ * @return m_list_t*
  */
 m_list_t *m_list_create(m_allocator_t *allocator, m_context_id_t context);
 

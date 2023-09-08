@@ -33,6 +33,8 @@ typedef struct m_map_iterator_t m_map_iterator_t;
 /**
  * @brief Create a new map with a specified hash table size.
  *
+ * @param[in] allocator
+ * @param[in] context
  * @param[in] size
  * @return m_map_t*
  */
