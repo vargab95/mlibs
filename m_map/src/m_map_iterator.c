@@ -23,7 +23,8 @@ m_map_iterator_t *m_map_iterator_create(m_map_t *map)
 void m_map_iterator_destroy(m_map_iterator_t **iterator)
 {
     (*iterator)->map->reference_count--;
-    free(*iterator);
+    (*iterator)->map->allocator->free((*iterator)->map->context, *iterator);
+    *iterator = NULL;
 }
 
 void m_map_iterator_next(m_map_iterator_t *iterator)

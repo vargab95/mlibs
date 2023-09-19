@@ -53,14 +53,17 @@ else()
 endif()
 
 install(TARGETS m_mem DESTINATION lib)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/api/m_mem.h DESTINATION include/m_libs)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/api/m_mem.h
+              ${CMAKE_CURRENT_SOURCE_DIR}/api/m_alloc.h
+        DESTINATION include/m_libs)
 
 if (BUILD_TEST)
     enable_testing()
 
     add_executable(m_mem_unit_test
                    ${CMAKE_CURRENT_SOURCE_DIR}/test/fixed_alloc.cpp
-                   ${CMAKE_CURRENT_SOURCE_DIR}/test/arena_alloc.cpp)
+                   ${CMAKE_CURRENT_SOURCE_DIR}/test/arena_alloc.cpp
+                   ${CMAKE_CURRENT_SOURCE_DIR}/test/slab_alloc.cpp)
 
     target_link_libraries(m_mem_unit_test m_mem GTest::gtest GTest::gtest_main)
     if (COMPOSITE_BUILD)

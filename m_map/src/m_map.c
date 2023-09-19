@@ -23,7 +23,7 @@ m_map_t *m_map_create(m_allocator_t *allocator, m_context_id_t context, const ui
 {
     m_map_t *map;
 
-    map = (m_map_t *)m_mem_malloc(sizeof(m_map_t));
+    map = (m_map_t *)allocator->malloc(context, sizeof(m_map_t));
     if (map == NULL)
     {
         return NULL;
@@ -63,8 +63,8 @@ void m_map_destroy(m_map_t **map)
         printf("Map: %p, reference counter: %d\n", *map, (*map)->reference_count);
     }
 
-    free((*map)->table);
-    free(*map);
+    (*map)->allocator->free((*map)->context, (*map)->table);
+    (*map)->allocator->free((*map)->context, *map);
     *map = NULL;
 }
 
@@ -134,11 +134,11 @@ void m_map_delete(const m_map_t *const map, const m_com_sized_data_t *const key)
         {
             if (STORED == element->copied)
             {
-                free(element->data.data);
-                free(element->key.data);
+                map->allocator->free(map->context, element->data.data);
+                map->allocator->free(map->context, element->key.data);
             }
             previous->next = element->next;
-            free(element);
+            map->allocator->free(map->context, element);
             break;
         }
 
