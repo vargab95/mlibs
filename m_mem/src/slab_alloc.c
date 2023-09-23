@@ -14,6 +14,8 @@
 #include "../../m_mem/api/m_alloc.h"
 #endif
 
+#include "../inc/internal.h"
+
 typedef struct slab_arena {
     size_t no_allocation_segments;
     uint64_t *allocation_segments;
@@ -34,23 +36,23 @@ typedef struct {
     slab slabs[];
 } slab_allocator_context;
 
-static m_context_id_t create_context(m_allocator_config_t config);
+static m_alloc_context_creation_result_t create_context(void *config);
 static int size_compare_function (const void * a, const void * b);
-static void destroy_context(m_context_id_t context);
+static m_alloc_rc_t destroy_context(m_context_id_t context);
 static void destroy_arena(struct slab_arena *arena);
 static slab *find_slab(slab_allocator_context *context, size_t size);
 
-static void *malloc_impl(m_context_id_t context, size_t size);
-static void *calloc_impl(m_context_id_t context, uint32_t number, size_t size);
-static void *realloc_impl(m_context_id_t context, void *data, size_t size);
-static void free_impl(m_context_id_t context, void *data);
+static m_alloc_alloc_result_t malloc_impl(m_context_id_t context, size_t size);
+static m_alloc_alloc_result_t calloc_impl(m_context_id_t context, uint32_t number, size_t size);
+static m_alloc_alloc_result_t realloc_impl(m_context_id_t context, void *data, size_t size);
+static m_alloc_rc_t free_impl(m_context_id_t context, void *data);
 
-static m_com_sized_data_t *sized_malloc_impl(m_context_id_t context, size_t size);
-static m_com_sized_data_t *sized_calloc_impl(m_context_id_t context, uint32_t number, size_t size);
-static m_com_sized_data_t *sized_realloc_impl(m_context_id_t context, m_com_sized_data_t *data, size_t size);
-static void sized_free_impl(m_context_id_t context, m_com_sized_data_t *data);
+static m_alloc_sized_alloc_result_t sized_malloc_impl(m_context_id_t context, size_t size);
+static m_alloc_sized_alloc_result_t sized_calloc_impl(m_context_id_t context, uint32_t number, size_t size);
+static m_alloc_sized_alloc_result_t sized_realloc_impl(m_context_id_t context, m_com_sized_data_t *data, size_t size);
+static m_alloc_rc_t sized_free_impl(m_context_id_t context, m_com_sized_data_t *data);
 
-m_allocator_t m_slab_allocator = {
+m_alloc_functions_t m_slab_allocator = {
     .create = create_context,
     .destroy = destroy_context,
 
@@ -65,18 +67,22 @@ m_allocator_t m_slab_allocator = {
     .sized_free = sized_free_impl
 };
 
-static m_context_id_t create_context(m_allocator_config_t config)
+static m_alloc_context_creation_result_t create_context(void *config)
 {
+    m_alloc_slab_config_t *_config = config;
     slab_allocator_context *context;
     uint16_t no_cell_sizes;
     void *ptr;
 
-    for (no_cell_sizes = 0; config.slab.cell_sizes[no_cell_sizes]; no_cell_sizes++);
+    for (no_cell_sizes = 0; _config->cell_sizes[no_cell_sizes]; no_cell_sizes++);
 
     context = malloc(sizeof(slab_allocator_context) + no_cell_sizes * (sizeof(slab) + sizeof(size_t)));
     if (!context)
     {
-        return NULL;
+        return (m_alloc_context_creation_result_t) {
+            .return_code = M_ALLOC_RC_NO_MEMORY,
+            .context = NULL
+        };
     }
 
     ptr = context;
@@ -85,7 +91,7 @@ static m_context_id_t create_context(m_allocator_config_t config)
     context->cell_sizes = ptr;
     context->number_of_cell_types = no_cell_sizes;
 
-    memcpy(context->cell_sizes, config.slab.cell_sizes, no_cell_sizes * sizeof(size_t));
+    memcpy(context->cell_sizes, _config->cell_sizes, no_cell_sizes * sizeof(size_t));
     memset(context->slabs, 0, no_cell_sizes * sizeof(slab));
 
     qsort(context->cell_sizes, context->number_of_cell_types, sizeof(size_t), size_compare_function);
@@ -94,8 +100,8 @@ static m_context_id_t create_context(m_allocator_config_t config)
     {
         context->slabs[i].allocation_size = context->cell_sizes[i];
 
-        size_t allocation_size = config.slab.minimum_no_cells_per_arena * context->cell_sizes[i]
-                                 + config.slab.minimum_no_cells_per_arena * 64
+        size_t allocation_size = _config->minimum_no_cells_per_arena * context->cell_sizes[i]
+                                 + _config->minimum_no_cells_per_arena * 64
                                  + sizeof(slab_arena);
         const int page_size = getpagesize();
         if (allocation_size % page_size)
@@ -106,17 +112,22 @@ static m_context_id_t create_context(m_allocator_config_t config)
         slab_arena *arena = context->slabs[i].arena = malloc(allocation_size);
         if (!arena)
         {
-            // TODO memleak
-            return NULL;
+            return (m_alloc_context_creation_result_t) {
+                .return_code = M_ALLOC_RC_NO_MEMORY,
+                .context = NULL
+            };
         }
 
         arena->next = NULL;
-        arena->no_allocation_segments = config.slab.minimum_no_cells_per_arena;
+        arena->no_allocation_segments = _config->minimum_no_cells_per_arena;
         arena->allocation_segments = (void*)arena + sizeof(slab_arena);
-        arena->buffer = (void*)arena->allocation_segments + config.slab.minimum_no_cells_per_arena * 64;
+        arena->buffer = (void*)arena->allocation_segments + _config->minimum_no_cells_per_arena * 64;
     }
 
-    return context;
+    return (m_alloc_context_creation_result_t) {
+        .return_code = M_ALLOC_RC_OK,
+        .context = context
+    };
 }
 
 static int size_compare_function (const void * a, const void * b)
@@ -124,7 +135,7 @@ static int size_compare_function (const void * a, const void * b)
     return (*(size_t*)a - *(size_t*)b);
 }
 
-static void destroy_context(m_context_id_t context)
+static m_alloc_rc_t destroy_context(m_context_id_t context)
 {
     slab_allocator_context *_context = context;
     for (int i = 0; i < _context->number_of_cell_types; i++)
@@ -133,6 +144,8 @@ static void destroy_context(m_context_id_t context)
     }
 
     free(_context);
+
+    return M_ALLOC_RC_OK;
 }
 
 static void destroy_arena(struct slab_arena *arena)
@@ -145,7 +158,7 @@ static void destroy_arena(struct slab_arena *arena)
     free(arena);
 }
 
-static void *malloc_impl(m_context_id_t context, size_t size)
+static m_alloc_alloc_result_t malloc_impl(m_context_id_t context, size_t size)
 {
     slab_allocator_context *_context = context;
     slab *slab = find_slab(_context, size);
@@ -153,7 +166,10 @@ static void *malloc_impl(m_context_id_t context, size_t size)
     if (!slab)
     {
         // TODO handle big objects
-        return NULL;
+        return (m_alloc_alloc_result_t) {
+            .return_code = M_ALLOC_RC_NO_MEMORY,
+            .pointer = NULL
+        };
     }
 
     slab_arena *free_arena;
@@ -193,72 +209,81 @@ CELL_FOUND:
         *allocation_segment |= 1 << (free_cell_id % 64);
     }
 
-    return free_arena->buffer + free_cell_id;
+    return (m_alloc_alloc_result_t) {
+        .return_code = M_ALLOC_RC_OK,
+        .pointer = free_arena->buffer + free_cell_id
+    };
 }
 
-static void *calloc_impl(m_context_id_t context, uint32_t number, size_t size)
+static m_alloc_alloc_result_t calloc_impl(m_context_id_t context, uint32_t number, size_t size)
 {
-    m_com_sized_data_t *result = sized_malloc_impl(context, number * size);
+    m_alloc_alloc_result_t result = malloc_impl(context, number * size);
 
-    memset(result, 0, number * size);
+    memset(result.pointer, 0, number * size);
 
     return result;
 }
 
-static void *realloc_impl(m_context_id_t context, void *data, size_t size)
+static m_alloc_alloc_result_t realloc_impl(m_context_id_t context, void *data, size_t size)
 {
-    m_com_sized_data_t *result = sized_malloc_impl(context, size);
+    m_alloc_alloc_result_t result = malloc_impl(context, size);
 
-    memcpy(result, data, size);
+    memcpy(result.pointer, data, size);
     free_impl(context, data);
 
     return result;
 }
 
-static void free_impl(m_context_id_t context, void *data)
+static m_alloc_rc_t free_impl(m_context_id_t context, void *data)
 {
+    return M_ALLOC_RC_OK;
 }
 
-static m_com_sized_data_t *sized_malloc_impl(m_context_id_t context, size_t size)
+static m_alloc_sized_alloc_result_t sized_malloc_impl(m_context_id_t context, size_t size)
 {
-    m_com_sized_data_t *result = malloc_impl(context, size + sizeof(m_com_sized_data_t));
+    m_alloc_alloc_result_t alloc_result = malloc_impl(context, size + sizeof(m_com_sized_data_t));
+    m_alloc_sized_alloc_result_t result = {
+        .return_code = alloc_result.return_code,
+        .data = alloc_result.pointer
+    };
 
-    if (result)
+    if (result.return_code == M_ALLOC_RC_OK)
     {
-        result->size = size;
-        result->data = (void*)result + sizeof(m_com_sized_data_t);
+        result.data->size = size;
+        result.data->data = (void*)result.data + sizeof(m_com_sized_data_t);
     }
 
     return result;
 }
 
-static m_com_sized_data_t *sized_calloc_impl(m_context_id_t context, uint32_t number, size_t size)
+static m_alloc_sized_alloc_result_t sized_calloc_impl(m_context_id_t context, uint32_t number, size_t size)
 {
-    m_com_sized_data_t *result = sized_malloc_impl(context, number * size);
+    m_alloc_sized_alloc_result_t result = sized_malloc_impl(context, number * size);
 
-    if (result)
+    if (result.return_code == M_ALLOC_RC_OK)
     {
-        memset(result->data, 0, result->size);
+        memset(result.data->data, 0, result.data->size);
     }
 
     return result;
 }
 
-static m_com_sized_data_t *sized_realloc_impl(m_context_id_t context, m_com_sized_data_t *data, size_t size)
+static m_alloc_sized_alloc_result_t sized_realloc_impl(m_context_id_t context, m_com_sized_data_t *data, size_t size)
 {
-    m_com_sized_data_t *result = sized_malloc_impl(context, size);
+    m_alloc_sized_alloc_result_t result = sized_malloc_impl(context, size);
 
-    if (result)
+    if (result.return_code == M_ALLOC_RC_OK)
     {
-        m_mem_copy(data, result);
+        m_mem_copy(data, result.data);
         sized_free_impl(context, data);
     }
 
     return result;
 }
 
-static void sized_free_impl(m_context_id_t context, m_com_sized_data_t *data)
+static m_alloc_rc_t sized_free_impl(m_context_id_t context, m_com_sized_data_t *data)
 {
+    return M_ALLOC_RC_OK;
 }
 
 static slab *find_slab(slab_allocator_context *context, size_t size)

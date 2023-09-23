@@ -25,7 +25,7 @@ struct m_map_t
 {
     uint32_t size;
     uint32_t reference_count;
-    m_allocator_t *allocator;
+    m_allocator_functions_t *allocator;
     m_context_id_t context;
 
     m_map_element_t *table;

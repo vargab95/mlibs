@@ -38,7 +38,7 @@ typedef struct m_list_iterator_t m_list_iterator_t;
  * @param[in] context
  * @return m_list_t*
  */
-m_list_t *m_list_create(m_allocator_t *allocator, m_context_id_t context);
+m_list_t *m_list_create(m_allocator_functions_t *allocator, m_context_id_t context);
 
 /**
  * @brief Destroys a list.

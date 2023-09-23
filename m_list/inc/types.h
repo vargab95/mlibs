@@ -35,7 +35,7 @@ typedef struct m_list_t
 {
     size_t size;
     uint32_t reference_counter;
-    m_allocator_t *allocator;
+    m_allocator_functions_t *allocator;
     m_context_id_t context;
 
     m_list_node_t *head;

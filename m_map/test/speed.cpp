@@ -51,7 +51,7 @@ int main(void)
     start = high_resolution_clock::now();
     {
         const size_t pagesize = getpagesize();
-        m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        m_context_id_t context = allocator_functions.create((m_allocator_config_t){
             .arena = {
                 .minimum_size_per_arena = pagesize
             }

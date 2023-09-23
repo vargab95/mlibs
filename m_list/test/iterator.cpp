@@ -8,12 +8,12 @@ extern "C"
 static m_list_iterator_t* set_up(m_list_t **list, m_context_id_t *context)
 {
     const size_t pagesize = getpagesize();
-    *context = m_arena_allocator.create((m_allocator_config_t){
+    *context = allocator_functions.create((m_allocator_config_t){
         .arena = {
             .minimum_size_per_arena = pagesize
         }
     });
-    *list = m_list_create(&m_arena_allocator, *context);
+    *list = m_list_create(&allocator_functions, *context);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
     m_list_iterator_t *iterator;
@@ -34,21 +34,21 @@ static void tear_down(m_list_t **list, m_list_iterator_t **iterator, m_context_i
 {
     m_list_iterator_destroy(iterator);
     m_list_destroy(list);
-    m_arena_allocator.destroy(*context);
+    allocator_functions.destroy(*context);
 }
 
 TEST(m_list_iterate_tests, destroy_referenced)
 {
     const size_t pagesize = getpagesize();
-    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+    m_context_id_t context = allocator_functions.create((m_allocator_config_t){
         .arena = {
             .minimum_size_per_arena = pagesize
         }
     });
-    m_list_t *list = m_list_create(&m_arena_allocator, context);
+    m_list_t *list = m_list_create(&allocator_functions, context);
     m_list_iterator_t *iterator = m_list_iterator_create(list);
     m_list_destroy(&list);
-    m_arena_allocator.destroy(context);
+    allocator_functions.destroy(context);
 }
 
 TEST(m_list_iterate_tests, previous_null_at_head)

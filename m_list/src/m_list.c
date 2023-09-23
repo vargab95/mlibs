@@ -17,7 +17,7 @@ static boolean append_to_beginning_any(m_list_t *list, const m_com_sized_data_t 
 static boolean conditional_copy(m_list_t *list, const m_com_sized_data_t *const src, m_com_sized_data_t *dst, boolean copy);
 static void delete_node(m_list_t *list, m_list_node_t **node);
 
-m_list_t *m_list_create(m_allocator_t *allocator, m_context_id_t context)
+m_list_t *m_list_create(m_allocator_functions_t *allocator, m_context_id_t context)
 {
     m_list_t *list;
 

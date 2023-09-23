@@ -19,7 +19,7 @@ static m_map_element_t *find_sub_element(const m_map_element_t *const root, cons
 static m_map_element_t *create_element(const m_map_t *const map, m_map_element_t *const root, const m_com_sized_data_t *const key);
 static m_map_element_t *get_or_create(const m_map_t *const map, const m_com_sized_data_t *const key);
 
-m_map_t *m_map_create(m_allocator_t *allocator, m_context_id_t context, const uint32_t size)
+m_map_t *m_map_create(m_allocator_functions_t *allocator, m_context_id_t context, const uint32_t size)
 {
     m_map_t *map;
 

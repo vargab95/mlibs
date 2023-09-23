@@ -14,27 +14,29 @@
 #include "../../m_mem/api/m_alloc.h"
 #endif
 
+#include "../inc/internal.h"
+
 struct arena {
     struct arena *next;
     void *ptr;
     void *buffer;
 };
 
-static m_context_id_t create_context(m_allocator_config_t config);
-static void destroy_context(m_context_id_t context);
+static m_alloc_context_creation_result_t create_context(void *config);
+static m_alloc_rc_t destroy_context(m_context_id_t context);
 static void destroy_arena(struct arena *arena);
 
-static void *malloc_impl(m_context_id_t context, size_t size);
-static void *calloc_impl(m_context_id_t context, uint32_t number, size_t size);
-static void *realloc_impl(m_context_id_t context, void *data, size_t size);
-static void free_impl(m_context_id_t context, void *data);
+static m_alloc_alloc_result_t malloc_impl(m_context_id_t context, size_t size);
+static m_alloc_alloc_result_t calloc_impl(m_context_id_t context, uint32_t number, size_t size);
+static m_alloc_alloc_result_t realloc_impl(m_context_id_t context, void *data, size_t size);
+static m_alloc_rc_t free_impl(m_context_id_t context, void *data);
 
-static m_com_sized_data_t *sized_malloc_impl(m_context_id_t context, size_t size);
-static m_com_sized_data_t *sized_calloc_impl(m_context_id_t context, uint32_t number, size_t size);
-static m_com_sized_data_t *sized_realloc_impl(m_context_id_t context, m_com_sized_data_t *data, size_t size);
-static void sized_free_impl(m_context_id_t context, m_com_sized_data_t *data);
+static m_alloc_sized_alloc_result_t sized_malloc_impl(m_context_id_t context, size_t size);
+static m_alloc_sized_alloc_result_t sized_calloc_impl(m_context_id_t context, uint32_t number, size_t size);
+static m_alloc_sized_alloc_result_t sized_realloc_impl(m_context_id_t context, m_com_sized_data_t *data, size_t size);
+static m_alloc_rc_t sized_free_impl(m_context_id_t context, m_com_sized_data_t *data);
 
-m_allocator_t m_arena_allocator = {
+m_alloc_functions_t allocator_functions = {
     .create = create_context,
     .destroy = destroy_context,
 
@@ -56,9 +58,9 @@ typedef struct {
     struct arena arenas;
 } arena_allocator_context;
 
-static m_context_id_t create_context(m_allocator_config_t config)
+static m_alloc_context_creation_result_t create_context(void *config)
 {
-    size_t allocation_size = config.arena.minimum_size_per_arena + sizeof(arena_allocator_context);
+    size_t allocation_size = ((m_alloc_arena_config_t*)config)->minimum_size_per_arena + sizeof(arena_allocator_context);
     const int page_size = getpagesize();
     if (allocation_size % page_size)
     {
@@ -68,7 +70,10 @@ static m_context_id_t create_context(m_allocator_config_t config)
     arena_allocator_context *context = aligned_alloc(page_size, allocation_size);
     if (context == NULL)
     {
-        return NULL;
+        return (m_alloc_context_creation_result_t) {
+            .return_code = M_ALLOC_RC_NO_MEMORY,
+            .context = NULL
+        };
     }
 
     context->arenas.buffer = (void*)context + sizeof(arena_allocator_context);
@@ -78,10 +83,13 @@ static m_context_id_t create_context(m_allocator_config_t config)
     context->page_size = page_size;
     context->allocation_size = allocation_size;
 
-    return context;
+    return (m_alloc_context_creation_result_t) {
+        .return_code = M_ALLOC_RC_OK,
+        .context = context
+    };
 }
 
-static void destroy_context(m_context_id_t context)
+static m_alloc_rc_t destroy_context(m_context_id_t context)
 {
     arena_allocator_context *_context = context;
 
@@ -91,6 +99,8 @@ static void destroy_context(m_context_id_t context)
     }
 
     free(_context);
+
+    return M_ALLOC_RC_OK;
 }
 
 static void destroy_arena(struct arena *arena)
@@ -103,7 +113,7 @@ static void destroy_arena(struct arena *arena)
     free(arena);
 }
 
-static void *malloc_impl(m_context_id_t context, size_t size)
+static m_alloc_alloc_result_t malloc_impl(m_context_id_t context, size_t size)
 {
     arena_allocator_context *_context = context;
 
@@ -112,7 +122,10 @@ static void *malloc_impl(m_context_id_t context, size_t size)
         struct arena *new_arena = malloc(size + sizeof(struct arena));
         if (new_arena == NULL)
         {
-            return NULL;
+            return (m_alloc_alloc_result_t) {
+                .return_code = M_ALLOC_RC_NO_MEMORY,
+                .pointer = NULL
+            };
         }
 
         new_arena->buffer = (void*)new_arena + sizeof(struct arena);
@@ -120,7 +133,10 @@ static void *malloc_impl(m_context_id_t context, size_t size)
         new_arena->next = _context->arenas.next;
         _context->arenas.next = new_arena;
 
-        return new_arena->buffer;
+        return (m_alloc_alloc_result_t) {
+            .return_code = M_ALLOC_RC_OK,
+            .pointer = new_arena->buffer
+        };
     }
 
     void *result_ptr = _context->arena_in_use->ptr - size;
@@ -129,7 +145,10 @@ static void *malloc_impl(m_context_id_t context, size_t size)
         struct arena *new_arena = aligned_alloc(_context->page_size, _context->allocation_size);
         if (new_arena == NULL)
         {
-            return NULL;
+            return (m_alloc_alloc_result_t) {
+                .return_code = M_ALLOC_RC_NO_MEMORY,
+                .pointer = NULL
+            };
         }
 
         new_arena->buffer = (void*)new_arena + sizeof(struct arena);
@@ -144,77 +163,85 @@ static void *malloc_impl(m_context_id_t context, size_t size)
 
     _context->arena_in_use->ptr = result_ptr;
 
-    return result_ptr;
+    return (m_alloc_alloc_result_t) {
+        .return_code = M_ALLOC_RC_OK,
+        .pointer = result_ptr
+    };
 }
 
-static void *calloc_impl(m_context_id_t context, uint32_t number, size_t size)
+static m_alloc_alloc_result_t calloc_impl(m_context_id_t context, uint32_t number, size_t size)
 {
     const size_t whole_size = size * number;
-    void *result = malloc_impl(context, whole_size);
+    m_alloc_alloc_result_t result = malloc_impl(context, whole_size);
 
-    if (result)
+    if (result.return_code == M_ALLOC_RC_OK)
     {
-        memset(result, 0, whole_size);
+        memset(result.pointer, 0, whole_size);
     }
 
     return result;
 }
 
-static void *realloc_impl(m_context_id_t context, void *data, size_t size)
+static m_alloc_alloc_result_t realloc_impl(m_context_id_t context, void *data, size_t size)
 {
-    void *result = malloc_impl(context, size);
+    m_alloc_alloc_result_t result = malloc_impl(context, size);
 
-    if (result)
+    if (result.return_code == M_ALLOC_RC_OK)
     {
-        memcpy(result, data, size);
+        memcpy(result.pointer, data, size);
     }
 
     return result;
 }
 
-static void free_impl(m_context_id_t context, void *data)
+static m_alloc_rc_t free_impl(m_context_id_t context, void *data)
 {
-
+    return M_ALLOC_RC_OK;
 }
 
-static m_com_sized_data_t *sized_malloc_impl(m_context_id_t context, size_t size)
+static m_alloc_sized_alloc_result_t sized_malloc_impl(m_context_id_t context, size_t size)
 {
-    m_com_sized_data_t *result = malloc_impl(context, size + sizeof(m_com_sized_data_t));
+    m_alloc_alloc_result_t alloc_result = malloc_impl(context, size + sizeof(m_com_sized_data_t));
+    m_alloc_sized_alloc_result_t result = {
+        .return_code = alloc_result.return_code,
+        .data = alloc_result.pointer
+    };
 
-    if (result)
+    if (result.return_code != M_ALLOC_RC_OK)
     {
-        result->size = size;
-        result->data = (void*)result + sizeof(m_com_sized_data_t);
+        result.data->size = size;
+        result.data->data = (void*)result.data + sizeof(m_com_sized_data_t);
     }
 
     return result;
 }
 
-static m_com_sized_data_t *sized_calloc_impl(m_context_id_t context, uint32_t number, size_t size)
+static m_alloc_sized_alloc_result_t sized_calloc_impl(m_context_id_t context, uint32_t number, size_t size)
 {
     const size_t whole_size = size * number;
-    m_com_sized_data_t *result = sized_malloc_impl(context, whole_size);
+    m_alloc_sized_alloc_result_t result = sized_malloc_impl(context, whole_size);
 
-    if (result)
+    if (result.return_code == M_ALLOC_RC_OK)
     {
-        memset(result->data, 0, whole_size);
+        memset(result.data->data, 0, whole_size);
     }
 
     return result;
 }
 
-static m_com_sized_data_t *sized_realloc_impl(m_context_id_t context, m_com_sized_data_t *data, size_t size)
+static m_alloc_sized_alloc_result_t sized_realloc_impl(m_context_id_t context, m_com_sized_data_t *data, size_t size)
 {
-    m_com_sized_data_t *result = sized_malloc_impl(context, size);
+    m_alloc_sized_alloc_result_t result = sized_malloc_impl(context, size);
 
-    if (result)
+    if (result.return_code == M_ALLOC_RC_OK)
     {
-        m_mem_copy(data, result);
+        m_mem_copy(data, result.data);
     }
 
     return result;
 }
 
-static void sized_free_impl(m_context_id_t context, m_com_sized_data_t *data)
+static m_alloc_rc_t sized_free_impl(m_context_id_t context, m_com_sized_data_t *data)
 {
+    return M_ALLOC_RC_OK;
 }

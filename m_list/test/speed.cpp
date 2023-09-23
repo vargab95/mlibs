@@ -49,12 +49,12 @@ TEST(m_list_speed_tests, faster_than_std_list)
     start = high_resolution_clock::now();
     {
         const size_t pagesize = getpagesize();
-        m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
+        m_context_id_t context = allocator_functions.create((m_allocator_config_t){
             .arena = {
                 .minimum_size_per_arena = pagesize * 4
             }
         });
-        m_list_t *mlib_list = m_list_create(&m_arena_allocator, context);
+        m_list_t *mlib_list = m_list_create(&allocator_functions, context);
         m_com_sized_data_t value;
         m_com_sized_data_t *result;
         int i;
@@ -80,7 +80,7 @@ TEST(m_list_speed_tests, faster_than_std_list)
         duration = duration_cast<microseconds>(sub_stop - sub_start);
 
         m_list_destroy(&mlib_list);
-        m_arena_allocator.destroy(context);
+        allocator_functions.destroy(context);
     }
     stop = high_resolution_clock::now();
     mlib_duration = duration = duration_cast<microseconds>(stop - start);
