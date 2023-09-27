@@ -40,6 +40,8 @@ typedef struct m_lrucache_item_t
  */
 typedef struct m_lrucache_t
 {
+    m_alloc_instance_t *allocator;
+
     const m_lrucache_callbacks_t *callbacks;
 
     size_t length;
@@ -54,12 +56,17 @@ static void put_to_beginning_of_usage_list(m_lrucache_t *cache, m_lrucache_item_
 static void delete_oldest(m_lrucache_t *cache);
 static inline uint32_t get_table_index(m_lrucache_t *cache, const m_com_sized_data_t *const key);
 
-m_lrucache_t *m_lrucache_create(size_t capacity, const m_lrucache_callbacks_t * const callbacks)
+m_lrucache_t *m_lrucache_create(m_alloc_instance_t *allocator, size_t capacity, const m_lrucache_callbacks_t * const callbacks)
 {
-    m_lrucache_t *cache = m_mem_calloc(1, sizeof(m_lrucache_t) + capacity * sizeof(m_lrucache_item_t));
+    m_lrucache_t *cache = m_alloc_calloc(allocator, 1, sizeof(m_lrucache_t) + capacity * sizeof(m_lrucache_item_t)).pointer;
+    if (!cache)
+    {
+        return NULL;
+    }
 
     cache->capacity = capacity;
     cache->callbacks = callbacks;
+    cache->allocator = allocator;
 
     return cache;
 }
@@ -107,7 +114,7 @@ bool m_lrucache_put(m_lrucache_t *const cache, const m_com_sized_data_t *const k
 
     if (!slot)
     {
-        slot = m_mem_calloc(1, sizeof(m_lrucache_item_t));
+        slot = m_alloc_calloc(cache->allocator, 1, sizeof(m_lrucache_item_t)).pointer;
         if (!slot)
         {
             return false;
@@ -132,10 +139,10 @@ bool m_lrucache_put(m_lrucache_t *const cache, const m_com_sized_data_t *const k
         }
         else
         {
-            item = m_mem_calloc(1, sizeof(m_lrucache_item_t));
+            item = m_alloc_calloc(cache->allocator, 1, sizeof(m_lrucache_item_t)).pointer;
             if (!item)
             {
-                abort();
+                return false;
             }
 
             item->key = key;

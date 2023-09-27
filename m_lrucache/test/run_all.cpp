@@ -5,18 +5,14 @@ extern "C"
 #include "../api/m_lrucache.h"
 }
 
-void destroy_item(m_com_sized_data_t **key)
-{
-}
+void destroy_item(m_com_sized_data_t **key) {}
 
-m_lrucache_callbacks_t callbacks = {
-    .destroy_key = destroy_item,
-    .destroy_value = destroy_item
-};
+m_lrucache_callbacks_t callbacks = {.destroy_key = destroy_item, .destroy_value = destroy_item};
 
 TEST(m_lrucache_tests, put_and_get)
 {
-    m_lrucache_t *cache = m_lrucache_create(10, &callbacks);
+    m_lrucache_t *cache =
+        m_lrucache_create(m_alloc_create((m_alloc_config_t){.type = M_ALLOC_TYPE_SYSTEM}).allocator, 10, &callbacks);
     m_com_sized_data_t data;
     int i = 12;
 
@@ -30,7 +26,8 @@ TEST(m_lrucache_tests, put_and_get)
 
 TEST(m_lrucache_tests, fill_above_capacity_and_get_new)
 {
-    m_lrucache_t *cache = m_lrucache_create(10, &callbacks);
+    m_lrucache_t *cache =
+        m_lrucache_create(m_alloc_create((m_alloc_config_t){.type = M_ALLOC_TYPE_SYSTEM}).allocator, 10, &callbacks);
     int buffer[15];
     m_com_sized_data_t data[15];
 
@@ -48,7 +45,8 @@ TEST(m_lrucache_tests, fill_above_capacity_and_get_new)
 
 TEST(m_lrucache_tests, fill_above_capacity_and_get_old)
 {
-    m_lrucache_t *cache = m_lrucache_create(1, &callbacks);
+    m_lrucache_t *cache =
+        m_lrucache_create(m_alloc_create((m_alloc_config_t){.type = M_ALLOC_TYPE_SYSTEM}).allocator, 1, &callbacks);
     int buffer[15];
     m_com_sized_data_t data[15];
 

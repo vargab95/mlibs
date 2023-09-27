@@ -8,8 +8,10 @@
 
 #if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_common.h>
+#include <m_libs/m_alloc.h>
 #else
 #include "../../m_common/api/m_common.h"
+#include "../../m_mem/api/m_alloc.h"
 #endif
 
 /** @file m_lrucache.h
@@ -20,7 +22,7 @@
 typedef struct m_lrucache_t m_lrucache_t;
 
 /** @brief Type definition of LRU cache callbacks */
-typedef struct m_lrucache_callbacks_t 
+typedef struct m_lrucache_callbacks_t
 {
     /** @brief Called when the cache implementation deletes an element
      *         due to the capacity was reached or destroy was called.
@@ -40,7 +42,9 @@ typedef struct m_lrucache_callbacks_t
  * @param[in] m_lrucache_callbacks_t Callbacks for handling cache items
  * @return m_lrucache_t* New LRU cache instance
  */
-m_lrucache_t* m_lrucache_create(size_t capacity, const m_lrucache_callbacks_t * const callbacks);
+m_lrucache_t* m_lrucache_create(m_alloc_instance_t *allocator,
+                                size_t capacity,
+                                const m_lrucache_callbacks_t * const callbacks);
 
 /**
  * Destroyes the LRU cache
