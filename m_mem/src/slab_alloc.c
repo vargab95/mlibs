@@ -156,7 +156,7 @@ static m_alloc_context_creation_result_t create_context(void *config)
         }
 
         arena->next = NULL;
-        arena->no_allocation_segments = _config->minimum_no_cells_per_arena;
+        arena->no_allocation_segments = _config->minimum_no_cells_per_arena / 64;
         arena->allocation_segments = (void*)arena + sizeof(slab_arena);
         arena->buffer = (void*)arena->allocation_segments + _config->minimum_no_cells_per_arena * 64;
     }
