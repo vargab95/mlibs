@@ -56,6 +56,8 @@ m_alloc_creation_result_t m_system_alloc_create()
         result.return_code = M_ALLOC_RC_NO_MEMORY;
     }
 
+    result.allocator->functions = &m_system_alloc;
+
     return result;
 }
 

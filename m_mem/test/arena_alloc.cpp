@@ -54,7 +54,7 @@ TEST(m_arena_allocator_tests, write_to_end)
         }
     });
 
-    m_alloc_sized_alloc_result_t result = m_alloc_sized_malloc(creation_result.allocator, page_size / 2);
+    m_alloc_sized_alloc_result_t result = m_alloc_sized_malloc(creation_result.allocator, sizeof(int));
     *(int*)result.data->data = 0xFEDCBA98;
 
     EXPECT_EQ(*(int*)result.data->data, 0xFEDCBA98);

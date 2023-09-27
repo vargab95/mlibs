@@ -244,7 +244,7 @@ static m_alloc_sized_alloc_result_t sized_malloc_impl(m_context_id_t context, si
         .data = alloc_result.pointer
     };
 
-    if (result.return_code != M_ALLOC_RC_OK)
+    if (result.return_code == M_ALLOC_RC_OK)
     {
         result.data->size = size;
         result.data->data = (void*)result.data + sizeof(m_com_sized_data_t);

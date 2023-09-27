@@ -31,7 +31,7 @@ TEST(m_fixed_allocator_tests, exhaust_context)
 
     m_alloc_sized_alloc_result_t result = m_alloc_sized_malloc(allocator_result.allocator, page_size + 1);
 
-    EXPECT_EQ(result.return_code, M_ALLOC_RC_OK);
+    EXPECT_EQ(result.return_code, M_ALLOC_RC_SIZE_LIMIT);
     EXPECT_EQ(result.data, nullptr);
     m_alloc_destroy(&allocator_result.allocator);
 }
@@ -60,7 +60,7 @@ TEST(m_fixed_allocator_tests, write_to_end)
     });
 
     m_alloc_sized_alloc_result_t result = m_alloc_sized_malloc(allocator_result.allocator, sizeof(int));
-    *(int*)result.data->data = 0xFEDCBA98;
+    *(int*)result.data->data = 4;
 
     EXPECT_EQ(result.return_code, M_ALLOC_RC_OK);
     EXPECT_EQ(*(int*)result.data->data, 4);

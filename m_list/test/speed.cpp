@@ -16,7 +16,7 @@ extern "C"
 using namespace std;
 using namespace std::chrono;
 
-const int test_count = 10000;
+const int test_count = 20000;
 
 TEST(m_list_speed_tests, faster_than_std_list)
 {
@@ -53,7 +53,7 @@ TEST(m_list_speed_tests, faster_than_std_list)
             .type = M_ALLOC_TYPE_ARENA,
             .u = {
                 .arena = {
-                    .minimum_size_per_arena = pagesize * 4
+                    .minimum_size_per_arena = pagesize * 2
                 }
             }
         }).allocator;

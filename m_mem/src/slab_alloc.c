@@ -146,7 +146,7 @@ static m_alloc_context_creation_result_t create_context(void *config)
             allocation_size = ((allocation_size / page_size) + 1) * page_size;
         }
 
-        slab_arena *arena = context->slabs[i].arena = malloc(allocation_size);
+        slab_arena *arena = context->slabs[i].arena = calloc(1, allocation_size);
         if (!arena)
         {
             return (m_alloc_context_creation_result_t) {
@@ -187,6 +187,11 @@ static m_alloc_rc_t destroy_context(m_context_id_t context)
 
 static void destroy_arena(struct slab_arena *arena)
 {
+    if (!arena)
+    {
+        return;
+    }
+
     if (arena->next)
     {
         destroy_arena(arena->next);
@@ -228,11 +233,8 @@ static m_alloc_alloc_result_t malloc_impl(m_context_id_t context, size_t size)
 
             for (int j = 0; j <= 64; j++)
             {
-                if (*allocation_segment & (1 << j))
-                {
-                    free_cell_id++;
-                }
-                else
+                free_cell_id++;
+                if ((*allocation_segment & (1 << j)) == 0)
                 {
                     goto CELL_FOUND;
                 }
@@ -248,7 +250,7 @@ CELL_FOUND:
 
     return (m_alloc_alloc_result_t) {
         .return_code = M_ALLOC_RC_OK,
-        .pointer = free_arena->buffer + free_cell_id
+        .pointer = free_arena->buffer + (free_cell_id * slab->allocation_size)
     };
 }
 

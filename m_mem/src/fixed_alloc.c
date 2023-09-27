@@ -176,9 +176,9 @@ static m_alloc_rc_t free_impl(m_context_id_t context, void *data)
 static m_alloc_sized_alloc_result_t sized_malloc_impl(m_context_id_t context, size_t size)
 {
     m_alloc_alloc_result_t malloc_result = malloc_impl(context, size + sizeof(m_com_sized_data_t));
-    m_alloc_sized_alloc_result_t result;
+    m_alloc_sized_alloc_result_t result = { 0 };
 
-    if (result.return_code == M_ALLOC_RC_OK)
+    if (malloc_result.return_code == M_ALLOC_RC_OK)
     {
         result.data = malloc_result.pointer;
         result.data->size = size;
