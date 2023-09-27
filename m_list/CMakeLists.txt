@@ -61,9 +61,9 @@ if (BUILD_TEST)
                    ${CMAKE_CURRENT_SOURCE_DIR}/test/iterator.cpp
                    ${CMAKE_CURRENT_SOURCE_DIR}/test/delete.cpp)
 
-    target_link_libraries(m_list_unit_test m_list GTest::gtest GTest::gtest_main)
+    target_link_libraries(m_list_unit_test m_list m_mem GTest::gtest GTest::gtest_main)
     if (COMPOSITE_BUILD)
-        add_dependencies(m_list_unit_test m_list)
+        add_dependencies(m_list_unit_test m_list m_mem)
     endif()
 
     include(GoogleTest)
@@ -72,9 +72,9 @@ if (BUILD_TEST)
     add_executable(m_list_speed_test
                    ${CMAKE_CURRENT_SOURCE_DIR}/test/speed.cpp)
 
-    target_link_libraries(m_list_speed_test m_list GTest::gtest GTest::gtest_main)
+    target_link_libraries(m_list_speed_test m_list m_mem GTest::gtest GTest::gtest_main)
     if (COMPOSITE_BUILD)
-        add_dependencies(m_list_speed_test m_list)
+        add_dependencies(m_list_speed_test m_list m_mem)
     endif()
 
     include(GoogleTest)

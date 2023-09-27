@@ -5,15 +5,18 @@ extern "C"
 #include "../api/m_list.h"
 }
 
-static m_list_iterator_t* set_up(m_list_t **list, m_context_id_t *context)
+static m_list_iterator_t* set_up(m_list_t **list, m_alloc_instance_t **allocator)
 {
     const size_t pagesize = getpagesize();
-    *context = allocator_functions.create((m_allocator_config_t){
-        .arena = {
-            .minimum_size_per_arena = pagesize
+    *allocator = m_alloc_create((m_alloc_config_t){
+        .type = M_ALLOC_TYPE_ARENA,
+        .u = {
+            .arena = {
+                .minimum_size_per_arena = pagesize
+            }
         }
-    });
-    *list = m_list_create(&allocator_functions, *context);
+    }).allocator;
+    *list = m_list_create(*allocator);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
     m_list_iterator_t *iterator;
@@ -30,11 +33,11 @@ static m_list_iterator_t* set_up(m_list_t **list, m_context_id_t *context)
     return m_list_iterator_create(*list);
 }
 
-static void tear_down(m_list_t **list, m_list_iterator_t **iterator, m_context_id_t *context)
+static void tear_down(m_list_t **list, m_list_iterator_t **iterator, m_alloc_instance_t **allocator)
 {
     m_list_iterator_destroy(iterator);
     m_list_destroy(list);
-    allocator_functions.destroy(*context);
+    m_alloc_destroy(allocator);
 }
 
 TEST(m_list_delete_tests, delete_on_null)
@@ -51,12 +54,15 @@ TEST(m_list_delete_tests, delete_on_null)
 TEST(m_list_delete_tests, delete_from_empty)
 {
     const size_t pagesize = getpagesize();
-    m_context_id_t context = allocator_functions.create((m_allocator_config_t){
-        .arena = {
-            .minimum_size_per_arena = pagesize
+    m_alloc_instance_t *allocator = m_alloc_create((m_alloc_config_t){
+        .type = M_ALLOC_TYPE_ARENA,
+        .u = {
+            .arena = {
+                .minimum_size_per_arena = pagesize
+            }
         }
-    });
-    m_list_t *list = m_list_create(&allocator_functions, context);
+    }).allocator;
+    m_list_t *list = m_list_create(allocator);
     m_com_sized_data_t data;
     int i = 3;
 
@@ -66,14 +72,14 @@ TEST(m_list_delete_tests, delete_from_empty)
     m_list_delete_by_value(list, &data);
 
     m_list_destroy(&list);
-    allocator_functions.destroy(context);
+    m_alloc_destroy(&allocator);
 }
 
 TEST(m_list_delete_tests, delete_one)
 {
-    m_context_id_t context;
+    m_alloc_instance_t *allocator;
     m_list_t *list;
-    m_list_iterator_t *iterator = set_up(&list, &context);
+    m_list_iterator_t *iterator = set_up(&list, &allocator);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
 
@@ -88,14 +94,14 @@ TEST(m_list_delete_tests, delete_one)
     result = m_list_iterator_next(iterator);
     EXPECT_EQ(*(int *)result->data, 4);
 
-    tear_down(&list, &iterator, &context);
+    tear_down(&list, &iterator, &allocator);
 }
 
 TEST(m_list_delete_tests, delete_first)
 {
-    m_context_id_t context;
+    m_alloc_instance_t *allocator;
     m_list_t *list;
-    m_list_iterator_t *iterator = set_up(&list, &context);
+    m_list_iterator_t *iterator = set_up(&list, &allocator);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
 
@@ -109,14 +115,14 @@ TEST(m_list_delete_tests, delete_first)
     result = m_list_iterator_current(iterator);
     EXPECT_EQ(*(int *)result->data, 1);
 
-    tear_down(&list, &iterator, &context);
+    tear_down(&list, &iterator, &allocator);
 }
 
 TEST(m_list_delete_tests, delete_last)
 {
-    m_context_id_t context;
+    m_alloc_instance_t *allocator;
     m_list_t *list;
-    m_list_iterator_t *iterator = set_up(&list, &context);
+    m_list_iterator_t *iterator = set_up(&list, &allocator);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
 
@@ -130,14 +136,14 @@ TEST(m_list_delete_tests, delete_last)
     result = m_list_iterator_current(iterator);
     EXPECT_EQ(*(int *)result->data, 8);
 
-    tear_down(&list, &iterator, &context);
+    tear_down(&list, &iterator, &allocator);
 }
 
 TEST(m_list_delete_tests, delete_multiple)
 {
-    m_context_id_t context;
+    m_alloc_instance_t *allocator;
     m_list_t *list;
-    m_list_iterator_t *iterator = set_up(&list, &context);
+    m_list_iterator_t *iterator = set_up(&list, &allocator);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
 
@@ -155,5 +161,5 @@ TEST(m_list_delete_tests, delete_multiple)
     result = m_list_iterator_next(iterator);
     EXPECT_EQ(*(int *)result->data, 5);
 
-    tear_down(&list, &iterator, &context);
+    tear_down(&list, &iterator, &allocator);
 }

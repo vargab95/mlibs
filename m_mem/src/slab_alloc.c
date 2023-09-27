@@ -67,6 +67,43 @@ m_alloc_functions_t m_slab_allocator = {
     .sized_free = sized_free_impl
 };
 
+m_alloc_creation_result_t m_slab_allocator_create(m_alloc_slab_config_t configuration)
+{
+    m_alloc_context_creation_result_t context_result = create_context(&configuration);
+    if (context_result.return_code != M_ALLOC_RC_OK)
+    {
+        return (m_alloc_creation_result_t) {
+            .return_code = context_result.return_code,
+            .allocator = NULL
+        };
+    }
+
+    m_alloc_alloc_result_t alloc_result = malloc_impl(context_result.context, sizeof(m_alloc_instance_t));
+    if (alloc_result.return_code != M_ALLOC_RC_OK)
+    {
+        return (m_alloc_creation_result_t) {
+            .return_code = alloc_result.return_code,
+            .allocator = NULL
+        };
+    }
+
+    m_alloc_instance_t *allocator = alloc_result.pointer;
+
+    allocator->context = context_result.context;
+    allocator->configuration = (m_alloc_config_t){
+        .type = M_ALLOC_TYPE_SLAB,
+        .u = {
+            .slab = configuration
+        }
+    };
+    allocator->functions = &m_slab_allocator;
+
+    return (m_alloc_creation_result_t) {
+        .return_code = M_ALLOC_RC_OK,
+        .allocator = allocator
+    };
+}
+
 static m_alloc_context_creation_result_t create_context(void *config)
 {
     m_alloc_slab_config_t *_config = config;

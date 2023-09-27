@@ -58,6 +58,43 @@ typedef struct {
     struct arena arenas;
 } arena_allocator_context;
 
+m_alloc_creation_result_t m_arena_allocator_create(m_alloc_arena_config_t configuration)
+{
+    m_alloc_context_creation_result_t context_result = create_context(&configuration);
+    if (context_result.return_code != M_ALLOC_RC_OK)
+    {
+        return (m_alloc_creation_result_t) {
+            .return_code = context_result.return_code,
+            .allocator = NULL
+        };
+    }
+
+    m_alloc_alloc_result_t alloc_result = malloc_impl(context_result.context, sizeof(m_alloc_instance_t));
+    if (alloc_result.return_code != M_ALLOC_RC_OK)
+    {
+        return (m_alloc_creation_result_t) {
+            .return_code = alloc_result.return_code,
+            .allocator = NULL
+        };
+    }
+
+    m_alloc_instance_t *allocator = alloc_result.pointer;
+
+    allocator->context = context_result.context;
+    allocator->configuration = (m_alloc_config_t){
+        .type = M_ALLOC_TYPE_ARENA,
+        .u = {
+            .arena = configuration
+        }
+    };
+    allocator->functions = &allocator_functions;
+
+    return (m_alloc_creation_result_t) {
+        .return_code = M_ALLOC_RC_OK,
+        .allocator = allocator
+    };
+}
+
 static m_alloc_context_creation_result_t create_context(void *config)
 {
     size_t allocation_size = ((m_alloc_arena_config_t*)config)->minimum_size_per_arena + sizeof(arena_allocator_context);

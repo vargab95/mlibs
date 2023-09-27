@@ -11,23 +11,28 @@
 #include "../../m_mem/api/m_mem.h"
 #endif
 
+#if !defined(COMPOSITE_BUILD)
+#include <m_libs/m_alloc.h>
+#else
+#include "../../m_mem/api/m_alloc.h"
+#endif
+
 static void delete_any_by_value(m_list_t *list, const m_com_sized_data_t *const value, boolean multi);
 static boolean append_to_end_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy);
 static boolean append_to_beginning_any(m_list_t *list, const m_com_sized_data_t *const value, boolean copy);
 static boolean conditional_copy(m_list_t *list, const m_com_sized_data_t *const src, m_com_sized_data_t *dst, boolean copy);
 static void delete_node(m_list_t *list, m_list_node_t **node);
 
-m_list_t *m_list_create(m_allocator_functions_t *allocator, m_context_id_t context)
+m_list_t *m_list_create(m_alloc_instance_t *allocator)
 {
     m_list_t *list;
 
-    list = (m_list_t *)allocator->malloc(context, (sizeof(m_list_t)));
+    list = (m_list_t *)m_alloc_malloc(allocator, (sizeof(m_list_t))).pointer;
     if (list == NULL)
     {
         return NULL;
     }
 
-    list->context = context;
     list->allocator = allocator;
     list->size = 0;
     list->reference_counter = 0;
@@ -53,7 +58,7 @@ void m_list_destroy(m_list_t **list)
         printf("List: %p, reference counter: %d\n", *list, (*list)->reference_counter);
     }
 
-    (*list)->allocator->free((*list)->context, (void*)*list);
+    m_alloc_free((*list)->allocator, (void*)*list);
     *list = NULL;
 }
 
@@ -216,7 +221,7 @@ static boolean append_to_end_any(m_list_t *list, const m_com_sized_data_t *const
 {
     struct m_list_node_t *tmp;
 
-    tmp = (struct m_list_node_t *)list->allocator->malloc(list->context, sizeof(struct m_list_node_t));
+    tmp = (struct m_list_node_t *)m_alloc_malloc(list->allocator, sizeof(struct m_list_node_t)).pointer;
     if (tmp == NULL)
     {
         return false;
@@ -224,7 +229,7 @@ static boolean append_to_end_any(m_list_t *list, const m_com_sized_data_t *const
 
     if (!conditional_copy(list, value, &tmp->data, copy))
     {
-        list->allocator->free(list->context, (void*)tmp);
+        m_alloc_free(list->allocator, (void*)tmp);
         return false;
     }
 
@@ -252,7 +257,7 @@ static boolean append_to_beginning_any(m_list_t *list, const m_com_sized_data_t 
 {
     struct m_list_node_t *tmp;
 
-    tmp = (struct m_list_node_t *)list->allocator->malloc(list->context, sizeof(struct m_list_node_t));
+    tmp = (struct m_list_node_t *)m_alloc_malloc(list->allocator, sizeof(struct m_list_node_t)).pointer;
     if (tmp == NULL)
     {
         return false;
@@ -260,7 +265,7 @@ static boolean append_to_beginning_any(m_list_t *list, const m_com_sized_data_t 
 
     if (!conditional_copy(list, value, &tmp->data, copy))
     {
-        list->allocator->free(list->context, (void*)tmp);
+        m_alloc_free(list->allocator, (void*)tmp);
         return false;
     }
     tmp->next = list->head;
@@ -286,7 +291,7 @@ static boolean conditional_copy(m_list_t *list, const m_com_sized_data_t *const 
 {
     if (copy)
     {
-        dst->data = list->allocator->malloc(list->context, src->size);
+        dst->data = m_alloc_malloc(list->allocator, src->size).pointer;
         if (dst->data == NULL)
         {
             return false;
@@ -328,17 +333,20 @@ void m_list_custom_dump_binary(const m_list_t *const list,
 m_list_t *m_list_load_binary(FILE *fp)
 {
     int pagesize = getpagesize();
-    m_context_id_t context = m_arena_allocator.create((m_allocator_config_t){
-        .arena = {
-            .minimum_size_per_arena = pagesize
+    m_alloc_instance_t *allocator = m_alloc_create((m_alloc_config_t){
+        .type = M_ALLOC_TYPE_ARENA,
+        .u = {
+            .arena = {
+                .minimum_size_per_arena = pagesize
+            }
         }
-    });
-    if (!context)
+    }).allocator;
+    if (!allocator)
     {
         return NULL;
     }
 
-    m_list_t *list = m_list_create(&m_arena_allocator, context);
+    m_list_t *list = m_list_create(allocator);
     size_t data_size;
     long end_of_file, current_position;
 
@@ -357,7 +365,7 @@ m_list_t *m_list_load_binary(FILE *fp)
             break;
         }
 
-        data = list->allocator->malloc(list->context, data_size);
+        data = m_alloc_sized_malloc(list->allocator, data_size).data;
         if (fread(data->data, sizeof(uint8_t), data->size, fp) != data->size)
         {
             m_list_destroy(&list);
@@ -370,7 +378,7 @@ m_list_t *m_list_load_binary(FILE *fp)
         }
     }
 
-    m_arena_allocator.destroy(context);
+    m_alloc_destroy(&allocator);
 
     return list;
 }
@@ -381,10 +389,10 @@ static void delete_node(m_list_t *list, m_list_node_t **node)
 
     if ((*node)->copied == STORED)
     {
-        list->allocator->free(list->context, (*node)->data.data);
+        m_alloc_free(list->allocator, (*node)->data.data);
     }
 
     to_delete = (*node);
     (*node) = (*node)->next;
-    list->allocator->free(list->context, (void*)to_delete);
+    m_alloc_free(list->allocator, (void*)to_delete);
 }

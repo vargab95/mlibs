@@ -22,14 +22,27 @@ static bool process_env_arg(m_args_entry_t *entry, int i, char **argv);
 m_args_t *m_args_create(const char *description)
 {
     int pagesize = getpagesize();
-    m_context_id_t context = allocator_functions.create((m_allocator_config_t){
-        .arena = {
-            .minimum_size_per_arena = pagesize
+    m_alloc_instance_t *allocator = m_alloc_create((m_alloc_config_t){
+        .type = M_ALLOC_TYPE_ARENA,
+        .u = {
+            .arena = {
+                .minimum_size_per_arena = pagesize
+            }
         }
-    });
-    m_args_t *args = (m_args_t *)allocator_functions.malloc(context, sizeof(m_args_t));
+    }).allocator;
 
-    args->arg_list = m_list_create(&allocator_functions, context);
+    if (!allocator)
+    {
+        return NULL;
+    }
+
+    m_args_t *args = (m_args_t *)m_alloc_malloc(allocator, sizeof(m_args_t)).pointer;
+    if (!args)
+    {
+        return NULL;
+    }
+
+    args->arg_list = m_list_create(allocator);
     args->description = (char *)description;
 
     return args;

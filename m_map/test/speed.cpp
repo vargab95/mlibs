@@ -15,7 +15,7 @@ extern "C"
 using namespace std;
 using namespace std::chrono;
 
-const int test_count = 100000;
+const int test_count = 10000;
 
 int main(void)
 {
@@ -51,12 +51,15 @@ int main(void)
     start = high_resolution_clock::now();
     {
         const size_t pagesize = getpagesize();
-        m_context_id_t context = allocator_functions.create((m_allocator_config_t){
-            .arena = {
-                .minimum_size_per_arena = pagesize
+        m_alloc_instance_t *allocator = m_alloc_create((m_alloc_config_t) {
+            .type = M_ALLOC_TYPE_ARENA,
+            .u = {
+                .arena = {
+                    .minimum_size_per_arena = 8192
+                }
             }
-        });
-        m_map_t *mlib_map = m_map_create(&m_system_allocator, context, 10000);
+        }).allocator;
+        m_map_t *mlib_map = m_map_create(allocator, 10);
         m_com_sized_data_t key, value;
         m_com_sized_data_t *result;
         int i;
@@ -87,7 +90,7 @@ int main(void)
         cout << "mlib read ms: " << duration.count() << endl;
 
         m_map_destroy(&mlib_map);
-        m_fixed_allocator.destroy(context);
+        m_alloc_destroy(&allocator);
     }
     stop = high_resolution_clock::now();
     mlib_duration = duration = duration_cast<microseconds>(stop - start);

@@ -11,7 +11,7 @@ m_list_iterator_t *m_list_iterator_create(m_list_t *list)
 {
     m_list_iterator_t *iterator;
 
-    iterator = (m_list_iterator_t *)list->allocator->malloc(list->context, sizeof(m_list_iterator_t));
+    iterator = (m_list_iterator_t *)m_alloc_malloc(list->allocator, sizeof(m_list_iterator_t)).pointer;
     if (!iterator)
     {
         return NULL;
@@ -27,7 +27,7 @@ m_list_iterator_t *m_list_iterator_create(m_list_t *list)
 void m_list_iterator_destroy(m_list_iterator_t **iterator)
 {
     (*iterator)->list_reference->reference_counter--;
-    (*iterator)->list_reference->allocator->free((*iterator)->list_reference->context, (void*)*iterator);
+    m_alloc_free((*iterator)->list_reference->allocator, (void*)*iterator);
     *iterator = NULL;
 }
 

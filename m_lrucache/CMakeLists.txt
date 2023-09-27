@@ -43,7 +43,7 @@ target_include_directories(m_lrucache
                                ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 if (NOT COMPOSITE_BUILD)
-    target_link_libraries(m_lrucache ${M_COMMON_LIB} ${M_MEM_LIB})
+    target_link_libraries(m_lrucache ${M_COMMON_LIB} ${M_MEM_LIB} ${M_HASH_LIB})
 else()
     add_dependencies(m_lrucache m_common m_mem m_hash)
     target_link_libraries(m_lrucache m_common m_mem m_hash)

@@ -2,16 +2,17 @@
 #include <stdlib.h>
 
 #include "config.h"
-#include "m_alloc.h"
 #include "m_map.h"
 #include "types.h"
 
 #if !defined(COMPOSITE_BUILD)
 #include <m_libs/m_hash.h>
 #include <m_libs/m_mem.h>
+#include <m_libs/m_alloc.h>
 #else
 #include "../../m_hash/api/m_hash.h"
 #include "../../m_mem/api/m_mem.h"
+#include "../../m_mem/api/m_alloc.h"
 #endif
 
 static m_map_element_t *get_root_element(const m_map_t *const map, const m_com_sized_data_t *const key);
@@ -19,27 +20,26 @@ static m_map_element_t *find_sub_element(const m_map_element_t *const root, cons
 static m_map_element_t *create_element(const m_map_t *const map, m_map_element_t *const root, const m_com_sized_data_t *const key);
 static m_map_element_t *get_or_create(const m_map_t *const map, const m_com_sized_data_t *const key);
 
-m_map_t *m_map_create(m_allocator_functions_t *allocator, m_context_id_t context, const uint32_t size)
+m_map_t *m_map_create(m_alloc_instance_t *allocator, const uint32_t size)
 {
     m_map_t *map;
 
-    map = (m_map_t *)allocator->malloc(context, sizeof(m_map_t));
+    map = (m_map_t *)m_alloc_malloc(allocator, sizeof(m_map_t)).pointer;
     if (map == NULL)
     {
         return NULL;
     }
 
     map->size = size;
-    map->table = (m_map_element_t *)allocator->calloc(context, map->size, sizeof(m_map_element_t));
+    map->table = (m_map_element_t *)m_alloc_calloc(allocator, map->size, sizeof(m_map_element_t)).pointer;
     if (map->table == NULL)
     {
-        allocator->free(context, (void*)map);
+        m_alloc_free(allocator, (void*)map);
         return NULL;
     }
 
     map->reference_count = 0;
     map->allocator = allocator;
-    map->context = context;
 
     return map;
 }
@@ -63,8 +63,8 @@ void m_map_destroy(m_map_t **map)
         printf("Map: %p, reference counter: %d\n", *map, (*map)->reference_count);
     }
 
-    (*map)->allocator->free((*map)->context, (*map)->table);
-    (*map)->allocator->free((*map)->context, *map);
+    m_alloc_free((*map)->allocator, (*map)->table);
+    m_alloc_free((*map)->allocator, *map);
     *map = NULL;
 }
 
@@ -102,17 +102,17 @@ boolean m_map_store(const m_map_t *const map, const m_com_sized_data_t *const ke
     element->copied = STORED;
 
     element->data.size = value->size;
-    element->data.data = map->allocator->malloc(map->context, value->size);
+    element->data.data = m_alloc_malloc(map->allocator, value->size).pointer;
     if (element->data.data == NULL)
     {
         return false;
     }
 
     element->key.size = key->size;
-    element->key.data = map->allocator->malloc(map->context, key->size);
+    element->key.data = m_alloc_malloc(map->allocator, key->size).pointer;
     if (element->key.data == NULL)
     {
-        map->allocator->free(map->context, element->data.data);
+        m_alloc_free(map->allocator, element->data.data);
         return false;
     }
 
@@ -134,11 +134,11 @@ void m_map_delete(const m_map_t *const map, const m_com_sized_data_t *const key)
         {
             if (STORED == element->copied)
             {
-                map->allocator->free(map->context, element->data.data);
-                map->allocator->free(map->context, element->key.data);
+                m_alloc_free(map->allocator, element->data.data);
+                m_alloc_free(map->allocator, element->key.data);
             }
             previous->next = element->next;
-            map->allocator->free(map->context, element);
+            m_alloc_free(map->allocator, element);
             break;
         }
 
@@ -219,7 +219,7 @@ static m_map_element_t *find_sub_element(const m_map_element_t *const root, cons
 
 static m_map_element_t *create_element(const m_map_t * const map, m_map_element_t *const root, const m_com_sized_data_t *const key)
 {
-    m_map_element_t *new_element = (m_map_element_t *)map->allocator->malloc(map->context, sizeof(m_map_element_t));
+    m_map_element_t *new_element = (m_map_element_t *)m_alloc_malloc(map->allocator, sizeof(m_map_element_t)).pointer;
     if (new_element == NULL)
     {
         return NULL;

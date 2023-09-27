@@ -7,8 +7,15 @@ extern "C"
 
 TEST(m_map_iterator_tests, iterate_on_one_sized_table)
 {
-    m_context_id_t context = m_system_allocator.create((m_allocator_config_t){});
-    m_map_t *map = m_map_create(&m_system_allocator, context, 10);
+    m_alloc_instance_t *allocator = m_alloc_create((m_alloc_config_t) {
+        .type = M_ALLOC_TYPE_ARENA,
+        .u = {
+            .arena = {
+                .minimum_size_per_arena = 4096
+            }
+        }
+    }).allocator;
+    m_map_t *map = m_map_create(allocator, 10);
     m_map_iterator_t *iterator = m_map_iterator_create(map);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
@@ -37,8 +44,15 @@ TEST(m_map_iterator_tests, iterate_on_one_sized_table)
 
 TEST(m_map_iterator_tests, iterate_on_ten_sized_table)
 {
-    m_context_id_t context = m_system_allocator.create((m_allocator_config_t){});
-    m_map_t *map = m_map_create(&m_system_allocator, context, 10);
+    m_alloc_instance_t *allocator = m_alloc_create((m_alloc_config_t) {
+        .type = M_ALLOC_TYPE_ARENA,
+        .u = {
+            .arena = {
+                .minimum_size_per_arena = 4096
+            }
+        }
+    }).allocator;
+    m_map_t *map = m_map_create(allocator, 10);
     m_map_iterator_t *iterator = m_map_iterator_create(map);
     m_com_sized_data_t data;
     m_com_sized_data_t *result;
@@ -68,8 +82,15 @@ TEST(m_map_iterator_tests, iterate_on_ten_sized_table)
 
 TEST(m_map_iterator_tests, iterate_on_empty_table)
 {
-    m_context_id_t context = m_system_allocator.create((m_allocator_config_t){});
-    m_map_t *map = m_map_create(&m_system_allocator, context, 10);
+    m_alloc_instance_t *allocator = m_alloc_create((m_alloc_config_t) {
+        .type = M_ALLOC_TYPE_ARENA,
+        .u = {
+            .arena = {
+                .minimum_size_per_arena = 4096
+            }
+        }
+    }).allocator;
+    m_map_t *map = m_map_create(allocator, 10);
     m_map_iterator_t *iterator = m_map_iterator_create(map);
     m_com_sized_data_t *result;
 

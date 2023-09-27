@@ -38,7 +38,7 @@ typedef struct m_map_iterator_t m_map_iterator_t;
  * @param[in] size
  * @return m_map_t*
  */
-m_map_t *m_map_create(m_allocator_functions_t *allocator, m_context_id_t context, const uint32_t size);
+m_map_t *m_map_create(m_alloc_instance_t *allocator, const uint32_t size);
 
 /**
  * @brief Destroys a map created by m_map_create.
